@@ -1,6 +1,15 @@
 twilio-node changelog
 =====================
 
+[2019-10-25] Version 3.36.1
+---------------------------
+**Library**
+- [PR #493](https://github.com/twilio/twilio-node/pull/493): Update resources after sorting. Thanks to [@childish-sambino](https://github.com/childish-sambino)!
+- [PR #491](https://github.com/twilio/twilio-node/pull/491): added request validation for urls with and without ports. Thanks to [@eshanholtz](https://github.com/eshanholtz)!
+- [PR #490](https://github.com/twilio/twilio-node/pull/490): Fix escape url. Thanks to [@pedroprado010](https://github.com/pedroprado010)!
+- [PR #484](https://github.com/twilio/twilio-node/pull/484): Fixes missing identity value in token when it's not a string. Thanks to [@codedawi](https://github.com/codedawi)!
+
+
 [2019-10-16] Version 3.36.0
 ---------------------------
 **Library**
