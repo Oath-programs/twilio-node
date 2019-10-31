@@ -54,7 +54,7 @@ Bug fixes, docs, and library improvements are always welcome. Please refer to ou
 
 If you're not familiar with the GitHub pull request/contribution process, [this is a nice tutorial](https://gun.io/blog/how-to-github-fork-branch-and-pull-request/).
 
-#### Getting Started
+## Getting Started
 
 If you want to familiarize yourself with the project, you can start by [forking the repository](https://help.github.com/articles/fork-a-repo/) and [cloning it in your local development environment](https://help.github.com/articles/cloning-a-repository/). The project requires [Node.js](https://nodejs.org) to be installed on your machine.
 
