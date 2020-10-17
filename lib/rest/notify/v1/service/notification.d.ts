@@ -8,7 +8,6 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V1 = require('../../V1');
-import serialize = require('../../../../base/serialize');
 import { SerializableClass } from '../../../../interfaces';
 
 type NotificationPriority = 'high'|'low';
@@ -25,6 +24,12 @@ type NotificationPriority = 'high'|'low';
 declare function NotificationList(version: V1, serviceSid: string): NotificationListInstance;
 
 interface NotificationListInstance {
+  /**
+   * create a NotificationInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: NotificationInstance) => any): Promise<NotificationInstance>;
   /**
    * create a NotificationInstance
    *
@@ -46,6 +51,7 @@ interface NotificationListInstance {
  * @property apn - The APNS-specific payload that overrides corresponding attributes in a generic payload for APNS Bindings
  * @property body - The notification body text
  * @property data - The custom key-value pairs of the notification's payload
+ * @property deliveryCallbackUrl - URL to send webhooks
  * @property facebookMessenger - Deprecated
  * @property fcm - The FCM-specific payload that overrides corresponding attributes in generic payload for FCM Bindings
  * @property gcm - The GCM-specific payload that overrides corresponding attributes in generic payload for GCM Bindings
@@ -65,6 +71,7 @@ interface NotificationListInstanceCreateOptions {
   apn?: object;
   body?: string;
   data?: object;
+  deliveryCallbackUrl?: string;
   facebookMessenger?: object;
   fcm?: object;
   gcm?: object;
@@ -125,20 +132,20 @@ declare class NotificationInstance extends SerializableClass {
 
   accountSid: string;
   action: string;
-  alexa: object;
-  apn: object;
+  alexa: any;
+  apn: any;
   body: string;
-  data: object;
+  data: any;
   dateCreated: Date;
-  facebookMessenger: object;
-  fcm: object;
-  gcm: object;
+  facebookMessenger: any;
+  fcm: any;
+  gcm: any;
   identities: string[];
   priority: NotificationPriority;
   segments: string[];
   serviceSid: string;
   sid: string;
-  sms: object;
+  sms: any;
   sound: string;
   tags: string[];
   title: string;
@@ -175,4 +182,4 @@ declare class NotificationPage extends Page<V1, NotificationPayload, Notificatio
   toJSON(): any;
 }
 
-export { NotificationInstance, NotificationList, NotificationListInstance, NotificationListInstanceCreateOptions, NotificationPage, NotificationPayload, NotificationResource, NotificationSolution }
+export { NotificationInstance, NotificationList, NotificationListInstance, NotificationListInstanceCreateOptions, NotificationPage, NotificationPayload, NotificationPriority, NotificationResource, NotificationSolution }

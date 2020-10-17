@@ -31,9 +31,9 @@ describe('PhoneNumber', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers('PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
       promise.then(function() {
         throw new Error('failed');
@@ -42,7 +42,7 @@ describe('PhoneNumber', function() {
         done();
       }).done();
 
-      var trunkSid = 'TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+      var trunkSid = 'TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var sid = 'PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://trunking.twilio.com/v1/Trunks/${trunkSid}/PhoneNumbers/${sid}`;
 
@@ -54,7 +54,7 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2010-12-10T17:27:34Z',
           'date_updated': '2015-10-09T11:36:32Z',
@@ -87,11 +87,11 @@ describe('PhoneNumber', function() {
           'links': {
               'phone_number': 'https://api.twilio.com/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers('PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
       promise.then(function(response) {
         expect(response).toBeDefined();
@@ -103,9 +103,9 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid remove request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers('PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
       promise.then(function() {
         throw new Error('failed');
@@ -114,7 +114,7 @@ describe('PhoneNumber', function() {
         done();
       }).done();
 
-      var trunkSid = 'TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+      var trunkSid = 'TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var sid = 'PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://trunking.twilio.com/v1/Trunks/${trunkSid}/PhoneNumbers/${sid}`;
 
@@ -126,11 +126,11 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid delete response',
     function(done) {
-      var body = JSON.stringify(null);
+      var body = null;
 
       holodeck.mock(new Response(204, body));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers('PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
       promise.then(function(response) {
         expect(response).toBe(true);
@@ -142,10 +142,10 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var opts = {phoneNumberSid: 'PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'};
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers.create(opts);
       promise.then(function() {
         throw new Error('failed');
@@ -154,7 +154,7 @@ describe('PhoneNumber', function() {
         done();
       }).done();
 
-      var trunkSid = 'TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+      var trunkSid = 'TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://trunking.twilio.com/v1/Trunks/${trunkSid}/PhoneNumbers`;
 
       var values = {PhoneNumberSid: 'PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', };
@@ -167,7 +167,7 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2010-12-10T17:27:34Z',
           'date_updated': '2015-10-09T11:36:32Z',
@@ -200,12 +200,12 @@ describe('PhoneNumber', function() {
           'links': {
               'phone_number': 'https://api.twilio.com/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
           }
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 
       var opts = {phoneNumberSid: 'PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'};
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers.create(opts);
       promise.then(function(response) {
         expect(response).toBeDefined();
@@ -217,15 +217,15 @@ describe('PhoneNumber', function() {
   );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
-              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
+              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
               'key': 'phone_numbers',
               'next_page_url': null,
               'page': 0,
               'page_size': 1,
               'previous_page_url': null,
-              'url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
+              'url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
           },
           'phone_numbers': [
               {
@@ -263,23 +263,23 @@ describe('PhoneNumber', function() {
                   }
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
-      client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                         .phoneNumbers.each(() => done());
     }
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
-              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
+              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
               'key': 'phone_numbers',
               'next_page_url': null,
               'page': 0,
               'page_size': 1,
               'previous_page_url': null,
-              'url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
+              'url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
           },
           'phone_numbers': [
               {
@@ -317,9 +317,9 @@ describe('PhoneNumber', function() {
                   }
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
-      client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                         .phoneNumbers.each({pageSize: 20}, () => done());
       holodeck.assertHasRequest(new Request({
           method: 'GET',
@@ -330,15 +330,15 @@ describe('PhoneNumber', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
-              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
+              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
               'key': 'phone_numbers',
               'next_page_url': null,
               'page': 0,
               'page_size': 1,
               'previous_page_url': null,
-              'url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
+              'url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
           },
           'phone_numbers': [
               {
@@ -376,17 +376,17 @@ describe('PhoneNumber', function() {
                   }
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
-      client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                         .phoneNumbers.each({callback: () => done()}, () => fail('wrong callback!'));
     }
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers.list();
       promise.then(function() {
         throw new Error('failed');
@@ -395,7 +395,7 @@ describe('PhoneNumber', function() {
         done();
       }).done();
 
-      var trunkSid = 'TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+      var trunkSid = 'TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://trunking.twilio.com/v1/Trunks/${trunkSid}/PhoneNumbers`;
 
       holodeck.assertHasRequest(new Request({
@@ -406,15 +406,15 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid read_full response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
-              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
+              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
               'key': 'phone_numbers',
               'next_page_url': null,
               'page': 0,
               'page_size': 1,
               'previous_page_url': null,
-              'url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
+              'url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
           },
           'phone_numbers': [
               {
@@ -452,11 +452,11 @@ describe('PhoneNumber', function() {
                   }
               }
           ]
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers.list();
       promise.then(function(response) {
         expect(response).toBeDefined();
@@ -468,22 +468,22 @@ describe('PhoneNumber', function() {
   );
   it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
-              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
+              'first_page_url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0',
               'key': 'phone_numbers',
               'next_page_url': null,
               'page': 0,
               'page_size': 1,
               'previous_page_url': null,
-              'url': 'https://trunking.twilio.com/v1/Trunks/TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
+              'url': 'https://trunking.twilio.com/v1/Trunks/TKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/PhoneNumbers?PageSize=1&Page=0'
           },
           'phone_numbers': []
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
-      var promise = client.trunking.v1.trunks('TRXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      var promise = client.trunking.v1.trunks('TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                       .phoneNumbers.list();
       promise.then(function(response) {
         expect(response).toBeDefined();

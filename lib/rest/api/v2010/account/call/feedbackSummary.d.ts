@@ -8,7 +8,6 @@
 import Page = require('../../../../../base/Page');
 import Response = require('../../../../../http/response');
 import V2010 = require('../../../V2010');
-import serialize = require('../../../../../base/serialize');
 import { SerializableClass } from '../../../../../interfaces';
 
 type FeedbackSummaryStatus = 'queued'|'in-progress'|'completed'|'failed';
@@ -183,4 +182,4 @@ declare class FeedbackSummaryPage extends Page<V2010, FeedbackSummaryPayload, Fe
   toJSON(): any;
 }
 
-export { FeedbackSummaryContext, FeedbackSummaryInstance, FeedbackSummaryList, FeedbackSummaryListInstance, FeedbackSummaryListInstanceCreateOptions, FeedbackSummaryPage, FeedbackSummaryPayload, FeedbackSummaryResource, FeedbackSummarySolution }
+export { FeedbackSummaryContext, FeedbackSummaryInstance, FeedbackSummaryList, FeedbackSummaryListInstance, FeedbackSummaryListInstanceCreateOptions, FeedbackSummaryPage, FeedbackSummaryPayload, FeedbackSummaryResource, FeedbackSummarySolution, FeedbackSummaryStatus }

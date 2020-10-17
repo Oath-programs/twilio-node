@@ -31,7 +31,7 @@ describe('ShortCode', function() {
   });
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var opts = {shortCodeSid: 'SCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'};
       var promise = client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
@@ -56,7 +56,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'service_sid': 'MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -64,9 +64,11 @@ describe('ShortCode', function() {
           'date_updated': '2015-07-30T20:12:33Z',
           'short_code': '12345',
           'country_code': 'US',
-          'capabilities': [],
+          'capabilities': [
+              'SMS'
+          ],
           'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 
@@ -83,7 +85,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid remove request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                        .shortCodes('SCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
@@ -106,7 +108,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid delete response',
     function(done) {
-      var body = JSON.stringify(null);
+      var body = null;
 
       holodeck.mock(new Response(204, body));
 
@@ -122,7 +124,7 @@ describe('ShortCode', function() {
   );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -141,11 +143,13 @@ describe('ShortCode', function() {
                   'date_updated': '2015-07-30T20:12:33Z',
                   'short_code': '12345',
                   'country_code': 'US',
-                  'capabilities': [],
+                  'capabilities': [
+                      'SMS'
+                  ],
                   'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                          .shortCodes.each(() => done());
@@ -153,7 +157,7 @@ describe('ShortCode', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -172,11 +176,13 @@ describe('ShortCode', function() {
                   'date_updated': '2015-07-30T20:12:33Z',
                   'short_code': '12345',
                   'country_code': 'US',
-                  'capabilities': [],
+                  'capabilities': [
+                      'SMS'
+                  ],
                   'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                          .shortCodes.each({pageSize: 20}, () => done());
@@ -189,7 +195,7 @@ describe('ShortCode', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -208,11 +214,13 @@ describe('ShortCode', function() {
                   'date_updated': '2015-07-30T20:12:33Z',
                   'short_code': '12345',
                   'country_code': 'US',
-                  'capabilities': [],
+                  'capabilities': [
+                      'SMS'
+                  ],
                   'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                          .shortCodes.each({callback: () => done()}, () => fail('wrong callback!'));
@@ -220,7 +228,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                        .shortCodes.list();
@@ -242,7 +250,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid read_full response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -261,11 +269,13 @@ describe('ShortCode', function() {
                   'date_updated': '2015-07-30T20:12:33Z',
                   'short_code': '12345',
                   'country_code': 'US',
-                  'capabilities': [],
+                  'capabilities': [
+                      'SMS'
+                  ],
                   'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -281,7 +291,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.messaging.v1.services('MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                        .shortCodes('SCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
@@ -304,7 +314,7 @@ describe('ShortCode', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'service_sid': 'MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -312,9 +322,11 @@ describe('ShortCode', function() {
           'date_updated': '2015-07-30T20:12:33Z',
           'short_code': '12345',
           'country_code': 'US',
-          'capabilities': [],
+          'capabilities': [
+              'SMS'
+          ],
           'url': 'https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ShortCodes/SCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 

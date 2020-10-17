@@ -31,7 +31,7 @@ describe('BrandedCall', function() {
   });
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var opts = {from: 'from', to: 'to', reason: 'reason'};
       var promise = client.preview.trusted_comms.brandedCalls.create(opts);
@@ -54,21 +54,26 @@ describe('BrandedCall', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'bg_color': '#fff',
+          'brand_sid': 'BZaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'branded_channel_sid': 'BWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'business_sid': 'BXaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'call_sid': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'caller': 'Owl Bank',
           'created_at': '2019-05-01T20:00:00Z',
           'font_color': '#000',
           'from': '+15000000000',
           'logo': 'https://www.twilio.com/marketing/bundles/company/img/logos/red/twilio-logo-red.png',
+          'phone_number_sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'reason': 'Hello Jhon, your appointment has been confirmed.',
-          'sid': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sid': 'CQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'status': 'unknown',
           'to': '+573000000000',
           'use_case': 'conversational',
           'url': 'https://preview.twilio.com/TrustedComms/Business/BrandedCalls'
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 

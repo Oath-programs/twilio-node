@@ -29,26 +29,69 @@ describe('Day', function() {
       httpClient: holodeck
     });
   });
+  it('should generate valid fetch request',
+    function(done) {
+      holodeck.mock(new Response(500, {}));
+
+      var promise = client.preview.bulk_exports.exports('resource_type')
+                                               .days('day').fetch();
+      promise.then(function() {
+        throw new Error('failed');
+      }, function(error) {
+        expect(error.constructor).toBe(RestException.prototype.constructor);
+        done();
+      }).done();
+
+      var resourceType = 'resource_type';
+      var day = 'day';
+      var url = `https://preview.twilio.com/BulkExports/Exports/${resourceType}/Days/${day}`;
+
+      holodeck.assertHasRequest(new Request({
+        method: 'GET',
+        url: url
+      }));
+    }
+  );
+  it('should generate valid fetch response',
+    function(done) {
+      var body = {
+          'redirect_to': 'https://www.twilio.com'
+      };
+
+      holodeck.mock(new Response(200, body));
+
+      var promise = client.preview.bulk_exports.exports('resource_type')
+                                               .days('day').fetch();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'days': [
               {
-                  'day': '2017-05-01',
-                  'size': 1234,
-                  'resource_type': 'Calls'
+                  'day': '2017-04-01',
+                  'size': 100,
+                  'resource_type': 'Calls',
+                  'create_date': '2017-04-02',
+                  'friendly_name': 'friendly_name'
               }
           ],
           'meta': {
-              'key': 'days',
-              'page_size': 50,
-              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'page': 0,
+              'page_size': 50,
               'first_page_url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'previous_page_url': null,
-              'next_page_url': null
+              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'next_page_url': null,
+              'key': 'days'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.preview.bulk_exports.exports('resource_type')
                                  .days.each(() => done());
@@ -56,24 +99,26 @@ describe('Day', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'days': [
               {
-                  'day': '2017-05-01',
-                  'size': 1234,
-                  'resource_type': 'Calls'
+                  'day': '2017-04-01',
+                  'size': 100,
+                  'resource_type': 'Calls',
+                  'create_date': '2017-04-02',
+                  'friendly_name': 'friendly_name'
               }
           ],
           'meta': {
-              'key': 'days',
-              'page_size': 50,
-              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'page': 0,
+              'page_size': 50,
               'first_page_url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'previous_page_url': null,
-              'next_page_url': null
+              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'next_page_url': null,
+              'key': 'days'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.preview.bulk_exports.exports('resource_type')
                                  .days.each({pageSize: 20}, () => done());
@@ -86,24 +131,26 @@ describe('Day', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'days': [
               {
-                  'day': '2017-05-01',
-                  'size': 1234,
-                  'resource_type': 'Calls'
+                  'day': '2017-04-01',
+                  'size': 100,
+                  'resource_type': 'Calls',
+                  'create_date': '2017-04-02',
+                  'friendly_name': 'friendly_name'
               }
           ],
           'meta': {
-              'key': 'days',
-              'page_size': 50,
-              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'page': 0,
+              'page_size': 50,
               'first_page_url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'previous_page_url': null,
-              'next_page_url': null
+              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'next_page_url': null,
+              'key': 'days'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.preview.bulk_exports.exports('resource_type')
                                  .days.each({callback: () => done()}, () => fail('wrong callback!'));
@@ -111,7 +158,7 @@ describe('Day', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.preview.bulk_exports.exports('resource_type')
                                                .days.list();
@@ -131,26 +178,55 @@ describe('Day', function() {
       }));
     }
   );
-  it('should generate valid read response',
+  it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
+          'days': [],
+          'meta': {
+              'page': 0,
+              'page_size': 50,
+              'first_page_url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'previous_page_url': null,
+              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'next_page_url': null,
+              'key': 'days'
+          }
+      };
+
+      holodeck.mock(new Response(200, body));
+
+      var promise = client.preview.bulk_exports.exports('resource_type')
+                                               .days.list();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
+  it('should generate valid read_full response',
+    function(done) {
+      var body = {
           'days': [
               {
-                  'day': '2017-05-01',
-                  'size': 1234,
-                  'resource_type': 'Calls'
+                  'day': '2017-04-01',
+                  'size': 100,
+                  'resource_type': 'Calls',
+                  'create_date': '2017-04-02',
+                  'friendly_name': 'friendly_name'
               }
           ],
           'meta': {
-              'key': 'days',
-              'page_size': 50,
-              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'page': 0,
+              'page_size': 50,
               'first_page_url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
               'previous_page_url': null,
-              'next_page_url': null
+              'url': 'https://preview.twilio.com/BulkExports/Exports/Calls/Days?PageSize=50&Page=0',
+              'next_page_url': null,
+              'key': 'days'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 

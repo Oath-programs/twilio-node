@@ -10,6 +10,9 @@ import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
 import { DayList } from './export/day';
 import { DayListInstance } from './export/day';
+import { ExportCustomJobList } from './export/exportCustomJob';
+import { ExportCustomJobListInstance } from './export/exportCustomJob';
+import { JobListInstance } from './export/job';
 import { SerializableClass } from '../../../interfaces';
 
 /**
@@ -31,9 +34,10 @@ interface ExportListInstance {
   /**
    * Constructs a export
    *
-   * @param resourceType - The resource_type
+   * @param resourceType - The type of communication – Messages, Calls
    */
   get(resourceType: string): ExportContext;
+  jobs?: JobListInstance;
   /**
    * Provide a user-friendly representation
    */
@@ -62,11 +66,12 @@ declare class ExportContext {
    * access, please contact help@twilio.com.
    *
    * @param version - Version of the resource
-   * @param resourceType - The resource_type
+   * @param resourceType - The type of communication – Messages, Calls
    */
   constructor(version: BulkExports, resourceType: string);
 
   days: DayListInstance;
+  exportCustomJobs: ExportCustomJobListInstance;
   /**
    * fetch a ExportInstance
    *
@@ -90,7 +95,7 @@ declare class ExportInstance extends SerializableClass {
    *
    * @param version - Version of the resource
    * @param payload - The instance payload
-   * @param resourceType - The resource_type
+   * @param resourceType - The type of communication – Messages, Calls
    */
   constructor(version: BulkExports, payload: ExportPayload, resourceType: string);
 
@@ -99,6 +104,10 @@ declare class ExportInstance extends SerializableClass {
    * Access the days
    */
   days(): DayListInstance;
+  /**
+   * Access the exportCustomJobs
+   */
+  exportCustomJobs(): ExportCustomJobListInstance;
   /**
    * fetch a ExportInstance
    *

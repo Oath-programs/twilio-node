@@ -31,9 +31,9 @@ describe('TollFree', function() {
   });
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'end': 0,
-          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=0',
+          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0',
           'incoming_phone_numbers': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -48,10 +48,12 @@ describe('TollFree', function() {
                   },
                   'date_created': 'Thu, 30 Jul 2015 23:19:04 +0000',
                   'date_updated': 'Thu, 30 Jul 2015 23:19:04 +0000',
+                  'emergency_status': 'Active',
+                  'emergency_address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'friendly_name': '(808) 925-5327',
                   'identity_sid': 'RIaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'phone_number': '+18089255327',
                   'origin': 'origin',
+                  'phone_number': '+18089255327',
                   'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sms_application_sid': '',
                   'sms_fallback_method': 'POST',
@@ -67,19 +69,19 @@ describe('TollFree', function() {
                   'voice_fallback_method': 'POST',
                   'voice_fallback_url': null,
                   'voice_method': 'POST',
-                  'voice_url': null
+                  'voice_url': null,
+                  'bundle_sid': 'BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'voice_receive_mode': 'voice',
+                  'status': 'in-use'
               }
           ],
-          'last_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=2',
           'next_page_uri': null,
-          'num_pages': 3,
           'page': 0,
-          'page_size': 1,
+          'page_size': 50,
           'previous_page_uri': null,
           'start': 0,
-          'total': 3,
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0'
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .incomingPhoneNumbers
@@ -88,9 +90,9 @@ describe('TollFree', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'end': 0,
-          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=0',
+          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0',
           'incoming_phone_numbers': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -105,10 +107,12 @@ describe('TollFree', function() {
                   },
                   'date_created': 'Thu, 30 Jul 2015 23:19:04 +0000',
                   'date_updated': 'Thu, 30 Jul 2015 23:19:04 +0000',
+                  'emergency_status': 'Active',
+                  'emergency_address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'friendly_name': '(808) 925-5327',
                   'identity_sid': 'RIaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'phone_number': '+18089255327',
                   'origin': 'origin',
+                  'phone_number': '+18089255327',
                   'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sms_application_sid': '',
                   'sms_fallback_method': 'POST',
@@ -124,19 +128,19 @@ describe('TollFree', function() {
                   'voice_fallback_method': 'POST',
                   'voice_fallback_url': null,
                   'voice_method': 'POST',
-                  'voice_url': null
+                  'voice_url': null,
+                  'bundle_sid': 'BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'voice_receive_mode': 'voice',
+                  'status': 'in-use'
               }
           ],
-          'last_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=2',
           'next_page_uri': null,
-          'num_pages': 3,
           'page': 0,
-          'page_size': 1,
+          'page_size': 50,
           'previous_page_uri': null,
           'start': 0,
-          'total': 3,
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0'
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .incomingPhoneNumbers
@@ -150,9 +154,9 @@ describe('TollFree', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'end': 0,
-          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=0',
+          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0',
           'incoming_phone_numbers': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -167,10 +171,12 @@ describe('TollFree', function() {
                   },
                   'date_created': 'Thu, 30 Jul 2015 23:19:04 +0000',
                   'date_updated': 'Thu, 30 Jul 2015 23:19:04 +0000',
+                  'emergency_status': 'Active',
+                  'emergency_address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'friendly_name': '(808) 925-5327',
                   'identity_sid': 'RIaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'phone_number': '+18089255327',
                   'origin': 'origin',
+                  'phone_number': '+18089255327',
                   'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sms_application_sid': '',
                   'sms_fallback_method': 'POST',
@@ -186,19 +192,19 @@ describe('TollFree', function() {
                   'voice_fallback_method': 'POST',
                   'voice_fallback_url': null,
                   'voice_method': 'POST',
-                  'voice_url': null
+                  'voice_url': null,
+                  'bundle_sid': 'BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'voice_receive_mode': 'voice',
+                  'status': 'in-use'
               }
           ],
-          'last_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=2',
           'next_page_uri': null,
-          'num_pages': 3,
           'page': 0,
-          'page_size': 1,
+          'page_size': 50,
           'previous_page_uri': null,
           'start': 0,
-          'total': 3,
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0'
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .incomingPhoneNumbers
@@ -207,7 +213,7 @@ describe('TollFree', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                     .incomingPhoneNumbers
@@ -230,9 +236,9 @@ describe('TollFree', function() {
   );
   it('should generate valid read_full response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'end': 0,
-          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=0',
+          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0',
           'incoming_phone_numbers': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -247,10 +253,12 @@ describe('TollFree', function() {
                   },
                   'date_created': 'Thu, 30 Jul 2015 23:19:04 +0000',
                   'date_updated': 'Thu, 30 Jul 2015 23:19:04 +0000',
+                  'emergency_status': 'Active',
+                  'emergency_address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'friendly_name': '(808) 925-5327',
                   'identity_sid': 'RIaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'phone_number': '+18089255327',
                   'origin': 'origin',
+                  'phone_number': '+18089255327',
                   'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sms_application_sid': '',
                   'sms_fallback_method': 'POST',
@@ -266,19 +274,19 @@ describe('TollFree', function() {
                   'voice_fallback_method': 'POST',
                   'voice_fallback_url': null,
                   'voice_method': 'POST',
-                  'voice_url': null
+                  'voice_url': null,
+                  'bundle_sid': 'BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'voice_receive_mode': 'voice',
+                  'status': 'in-use'
               }
           ],
-          'last_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=2',
           'next_page_uri': null,
-          'num_pages': 3,
           'page': 0,
-          'page_size': 1,
+          'page_size': 50,
           'previous_page_uri': null,
           'start': 0,
-          'total': 3,
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -295,20 +303,17 @@ describe('TollFree', function() {
   );
   it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'end': 0,
-          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=0',
+          'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0',
           'incoming_phone_numbers': [],
-          'last_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1&Page=2',
           'next_page_uri': null,
-          'num_pages': 3,
           'page': 0,
-          'page_size': 1,
+          'page_size': 50,
           'previous_page_uri': null,
           'start': 0,
-          'total': 3,
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?PageSize=1'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/TollFree.json?FriendlyName=friendly_name&Beta=true&PhoneNumber=%2B19876543210&PageSize=50&Page=0'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -325,7 +330,7 @@ describe('TollFree', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var opts = {phoneNumber: '+15017122661'};
       var promise = client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
@@ -351,40 +356,46 @@ describe('TollFree', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'address_requirements': 'none',
           'address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'beta': false,
           'capabilities': {
-              'mms': true,
+              'voice': true,
               'sms': false,
-              'voice': true
+              'mms': true,
+              'fax': false
           },
           'date_created': 'Thu, 30 Jul 2015 23:19:04 +0000',
           'date_updated': 'Thu, 30 Jul 2015 23:19:04 +0000',
-          'friendly_name': '(808) 925-5327',
+          'emergency_status': 'Active',
+          'emergency_address_sid': 'ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'friendly_name': 'friendly_name',
           'identity_sid': 'RIaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'phone_number': '+18089255327',
           'origin': 'origin',
+          'phone_number': '+18089255327',
           'sid': 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'sms_application_sid': '',
-          'sms_fallback_method': 'POST',
-          'sms_fallback_url': '',
-          'sms_method': 'POST',
-          'sms_url': '',
-          'status_callback': '',
-          'status_callback_method': 'POST',
+          'sms_application_sid': 'APaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sms_fallback_method': 'GET',
+          'sms_fallback_url': 'https://example.com',
+          'sms_method': 'GET',
+          'sms_url': 'https://example.com',
+          'status_callback': 'https://example.com',
+          'status_callback_method': 'GET',
           'trunk_sid': null,
           'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/IncomingPhoneNumbers/PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
-          'voice_application_sid': '',
-          'voice_caller_id_lookup': false,
-          'voice_fallback_method': 'POST',
-          'voice_fallback_url': null,
-          'voice_method': 'POST',
-          'voice_url': null
-      });
+          'voice_application_sid': 'APaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'voice_caller_id_lookup': true,
+          'voice_fallback_method': 'GET',
+          'voice_fallback_url': 'https://example.com',
+          'voice_method': 'GET',
+          'voice_url': 'https://example.com',
+          'bundle_sid': 'BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'voice_receive_mode': 'voice',
+          'status': 'in-use'
+      };
 
       holodeck.mock(new Response(201, body));
 

@@ -30,11 +30,13 @@ declare function UserList(version: V2, serviceSid: string): UserListInstance;
  * @property attributes - A valid JSON string that contains application-specific data
  * @property friendlyName - A string to describe the resource
  * @property roleSid - The SID id of the Role assigned to this user
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface UserInstanceUpdateOptions {
   attributes?: string;
   friendlyName?: string;
   roleSid?: string;
+  xTwilioWebhookEnabled?: UserWebhookEnabledType;
 }
 
 interface UserListInstance {
@@ -49,6 +51,21 @@ interface UserListInstance {
    * @param callback - Callback to handle processed record
    */
   create(opts: UserListInstanceCreateOptions, callback?: (error: Error | null, item: UserInstance) => any): Promise<UserInstance>;
+  /**
+   * Streams UserInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: UserInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams UserInstance records from the API.
    *
@@ -79,6 +96,17 @@ interface UserListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: UserPage) => any): Promise<UserPage>;
+  /**
+   * Retrieve a single target page of UserInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -89,10 +117,30 @@ interface UserListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: UserInstance[]) => any): Promise<UserInstance[]>;
+  /**
+   * Lists UserInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: UserListInstanceOptions, callback?: (error: Error | null, items: UserInstance[]) => any): Promise<UserInstance[]>;
+  /**
+   * Retrieve a single page of UserInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: UserPage) => any): Promise<UserPage>;
   /**
    * Retrieve a single page of UserInstance records from the API.
    *
@@ -118,12 +166,14 @@ interface UserListInstance {
  * @property friendlyName - A string to describe the new resource
  * @property identity - The `identity` value that identifies the new resource's User
  * @property roleSid - The SID of the Role assigned to this user
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface UserListInstanceCreateOptions {
   attributes?: string;
   friendlyName?: string;
   identity: string;
   roleSid?: string;
+  xTwilioWebhookEnabled?: UserWebhookEnabledType;
 }
 
 /**
@@ -237,6 +287,12 @@ declare class UserContext {
   /**
    * update a UserInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: UserInstance) => any): Promise<UserInstance>;
+  /**
+   * update a UserInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -290,6 +346,12 @@ declare class UserInstance extends SerializableClass {
   /**
    * update a UserInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: UserInstance) => any): Promise<UserInstance>;
+  /**
+   * update a UserInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -328,4 +390,4 @@ declare class UserPage extends Page<V2, UserPayload, UserResource, UserInstance>
   toJSON(): any;
 }
 
-export { UserContext, UserInstance, UserInstanceUpdateOptions, UserList, UserListInstance, UserListInstanceCreateOptions, UserListInstanceEachOptions, UserListInstanceOptions, UserListInstancePageOptions, UserPage, UserPayload, UserResource, UserSolution }
+export { UserContext, UserInstance, UserInstanceUpdateOptions, UserList, UserListInstance, UserListInstanceCreateOptions, UserListInstanceEachOptions, UserListInstanceOptions, UserListInstancePageOptions, UserPage, UserPayload, UserResource, UserSolution, UserWebhookEnabledType }

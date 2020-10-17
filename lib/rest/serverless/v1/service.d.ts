@@ -8,7 +8,6 @@
 import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
 import V1 = require('../V1');
-import serialize = require('../../../base/serialize');
 import { AssetList } from './service/asset';
 import { AssetListInstance } from './service/asset';
 import { BuildList } from './service/build';
@@ -35,10 +34,12 @@ declare function ServiceList(version: V1): ServiceListInstance;
  *
  * @property friendlyName - A string to describe the Service resource
  * @property includeCredentials - Whether to inject Account credentials into a function invocation context
+ * @property uiEditable - Whether the Service resource's properties and subresources can be edited via the UI
  */
 interface ServiceInstanceUpdateOptions {
   friendlyName?: string;
   includeCredentials?: boolean;
+  uiEditable?: boolean;
 }
 
 interface ServiceListInstance {
@@ -53,6 +54,21 @@ interface ServiceListInstance {
    * @param callback - Callback to handle processed record
    */
   create(opts: ServiceListInstanceCreateOptions, callback?: (error: Error | null, item: ServiceInstance) => any): Promise<ServiceInstance>;
+  /**
+   * Streams ServiceInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: ServiceInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams ServiceInstance records from the API.
    *
@@ -83,6 +99,17 @@ interface ServiceListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: ServicePage) => any): Promise<ServicePage>;
+  /**
+   * Retrieve a single target page of ServiceInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -93,10 +120,30 @@ interface ServiceListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: ServiceInstance[]) => any): Promise<ServiceInstance[]>;
+  /**
+   * Lists ServiceInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: ServiceListInstanceOptions, callback?: (error: Error | null, items: ServiceInstance[]) => any): Promise<ServiceInstance[]>;
+  /**
+   * Retrieve a single page of ServiceInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: ServicePage) => any): Promise<ServicePage>;
   /**
    * Retrieve a single page of ServiceInstance records from the API.
    *
@@ -120,11 +167,13 @@ interface ServiceListInstance {
  *
  * @property friendlyName - A string to describe the Service resource
  * @property includeCredentials - Whether to inject Account credentials into a function invocation context
- * @property uniqueName - An application-defined string that uniquely identifies the Service resource
+ * @property uiEditable - Whether the Service's properties and subresources can be edited via the UI
+ * @property uniqueName - A user-defined string that uniquely identifies the Service resource
  */
 interface ServiceListInstanceCreateOptions {
   friendlyName: string;
   includeCredentials?: boolean;
+  uiEditable?: boolean;
   uniqueName: string;
 }
 
@@ -196,6 +245,7 @@ interface ServiceResource {
   include_credentials: boolean;
   links: string;
   sid: string;
+  ui_editable: boolean;
   unique_name: string;
   url: string;
 }
@@ -237,6 +287,12 @@ declare class ServiceContext {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a ServiceInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ServiceInstance) => any): Promise<ServiceInstance>;
   /**
    * update a ServiceInstance
    *
@@ -301,7 +357,14 @@ declare class ServiceInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  uiEditable: boolean;
   uniqueName: string;
+  /**
+   * update a ServiceInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ServiceInstance) => any): Promise<ServiceInstance>;
   /**
    * update a ServiceInstance
    *

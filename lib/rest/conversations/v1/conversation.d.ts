@@ -8,7 +8,6 @@
 import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
 import V1 = require('../V1');
-import serialize = require('../../../base/serialize');
 import { MessageList } from './conversation/message';
 import { MessageListInstance } from './conversation/message';
 import { ParticipantList } from './conversation/participant';
@@ -17,17 +16,25 @@ import { SerializableClass } from '../../../interfaces';
 import { WebhookList } from './conversation/webhook';
 import { WebhookListInstance } from './conversation/webhook';
 
+type ConversationState = 'inactive'|'active'|'closed';
+
 type ConversationWebhookEnabledType = 'true'|'false';
 
 /**
  * Initialize the ConversationList
  *
- * PLEASE NOTE that this class contains beta products that are subject to change.
- * Use them with caution.
- *
  * @param version - Version of the resource
  */
 declare function ConversationList(version: V1): ConversationListInstance;
+
+/**
+ * Options to pass to remove
+ *
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
+ */
+interface ConversationInstanceRemoveOptions {
+  xTwilioWebhookEnabled?: ConversationWebhookEnabledType;
+}
 
 /**
  * Options to pass to update
@@ -36,12 +43,26 @@ declare function ConversationList(version: V1): ConversationListInstance;
  * @property dateCreated - The date that this resource was created.
  * @property dateUpdated - The date that this resource was last updated.
  * @property friendlyName - The human-readable name of this conversation.
+ * @property messagingServiceSid - The unique ID of the Messaging Service this conversation belongs to.
+ * @property state - Current state of this conversation.
+ * @property timers.closed - ISO8601 duration when conversation will be switched to `closed` state.
+ * @property timers.inactive - ISO8601 duration when conversation will be switched to `inactive` state.
+ * @property uniqueName - An application-defined string that uniquely identifies the resource
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface ConversationInstanceUpdateOptions {
   attributes?: string;
   dateCreated?: Date;
   dateUpdated?: Date;
   friendlyName?: string;
+  messagingServiceSid?: string;
+  state?: ConversationState;
+  timers?: {
+    inactive?: string;
+    closed?: string;
+  };
+  uniqueName?: string;
+  xTwilioWebhookEnabled?: ConversationWebhookEnabledType;
 }
 
 interface ConversationListInstance {
@@ -52,10 +73,31 @@ interface ConversationListInstance {
   /**
    * create a ConversationInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: ConversationInstance) => any): Promise<ConversationInstance>;
+  /**
+   * create a ConversationInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
   create(opts?: ConversationListInstanceCreateOptions, callback?: (error: Error | null, item: ConversationInstance) => any): Promise<ConversationInstance>;
+  /**
+   * Streams ConversationInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: ConversationInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams ConversationInstance records from the API.
    *
@@ -86,6 +128,17 @@ interface ConversationListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: ConversationPage) => any): Promise<ConversationPage>;
+  /**
+   * Retrieve a single target page of ConversationInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -96,10 +149,30 @@ interface ConversationListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: ConversationInstance[]) => any): Promise<ConversationInstance[]>;
+  /**
+   * Lists ConversationInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: ConversationListInstanceOptions, callback?: (error: Error | null, items: ConversationInstance[]) => any): Promise<ConversationInstance[]>;
+  /**
+   * Retrieve a single page of ConversationInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: ConversationPage) => any): Promise<ConversationPage>;
   /**
    * Retrieve a single page of ConversationInstance records from the API.
    *
@@ -125,7 +198,12 @@ interface ConversationListInstance {
  * @property dateCreated - The date that this resource was created.
  * @property dateUpdated - The date that this resource was last updated.
  * @property friendlyName - The human-readable name of this conversation.
- * @property messagingServiceSid - The unique id of the SMS Service this conversation belongs to.
+ * @property messagingServiceSid - The unique ID of the Messaging Service this conversation belongs to.
+ * @property state - Current state of this conversation.
+ * @property timers.closed - ISO8601 duration when conversation will be switched to `closed` state.
+ * @property timers.inactive - ISO8601 duration when conversation will be switched to `inactive` state.
+ * @property uniqueName - An application-defined string that uniquely identifies the resource
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface ConversationListInstanceCreateOptions {
   attributes?: string;
@@ -133,6 +211,13 @@ interface ConversationListInstanceCreateOptions {
   dateUpdated?: Date;
   friendlyName?: string;
   messagingServiceSid?: string;
+  state?: ConversationState;
+  timers?: {
+    inactive?: string;
+    closed?: string;
+  };
+  uniqueName?: string;
+  xTwilioWebhookEnabled?: ConversationWebhookEnabledType;
 }
 
 /**
@@ -205,6 +290,9 @@ interface ConversationResource {
   links: string;
   messaging_service_sid: string;
   sid: string;
+  state: ConversationState;
+  timers: object;
+  unique_name: string;
   url: string;
 }
 
@@ -215,9 +303,6 @@ interface ConversationSolution {
 declare class ConversationContext {
   /**
    * Initialize the ConversationContext
-   *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
    *
    * @param version - Version of the resource
    * @param sid - A 34 character string that uniquely identifies this resource.
@@ -239,9 +324,22 @@ declare class ConversationContext {
    */
   remove(callback?: (error: Error | null, items: ConversationInstance) => any): Promise<boolean>;
   /**
+   * remove a ConversationInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: ConversationInstanceRemoveOptions, callback?: (error: Error | null, items: ConversationInstance) => any): Promise<boolean>;
+  /**
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a ConversationInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ConversationInstance) => any): Promise<ConversationInstance>;
   /**
    * update a ConversationInstance
    *
@@ -256,9 +354,6 @@ declare class ConversationContext {
 declare class ConversationInstance extends SerializableClass {
   /**
    * Initialize the ConversationContext
-   *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
    *
    * @param version - Version of the resource
    * @param payload - The instance payload
@@ -295,11 +390,27 @@ declare class ConversationInstance extends SerializableClass {
    * @param callback - Callback to handle processed record
    */
   remove(callback?: (error: Error | null, items: ConversationInstance) => any): Promise<boolean>;
+  /**
+   * remove a ConversationInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: ConversationInstanceRemoveOptions, callback?: (error: Error | null, items: ConversationInstance) => any): Promise<boolean>;
   sid: string;
+  state: ConversationState;
+  timers: any;
   /**
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  uniqueName: string;
+  /**
+   * update a ConversationInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ConversationInstance) => any): Promise<ConversationInstance>;
   /**
    * update a ConversationInstance
    *
@@ -319,9 +430,6 @@ declare class ConversationPage extends Page<V1, ConversationPayload, Conversatio
   /**
    * Initialize the ConversationPage
    *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
-   *
    * @param version - Version of the resource
    * @param response - Response from the API
    * @param solution - Path solution
@@ -340,4 +448,4 @@ declare class ConversationPage extends Page<V1, ConversationPayload, Conversatio
   toJSON(): any;
 }
 
-export { ConversationContext, ConversationInstance, ConversationInstanceUpdateOptions, ConversationList, ConversationListInstance, ConversationListInstanceCreateOptions, ConversationListInstanceEachOptions, ConversationListInstanceOptions, ConversationListInstancePageOptions, ConversationPage, ConversationPayload, ConversationResource, ConversationSolution }
+export { ConversationContext, ConversationInstance, ConversationInstanceRemoveOptions, ConversationInstanceUpdateOptions, ConversationList, ConversationListInstance, ConversationListInstanceCreateOptions, ConversationListInstanceEachOptions, ConversationListInstanceOptions, ConversationListInstancePageOptions, ConversationPage, ConversationPayload, ConversationResource, ConversationSolution, ConversationState, ConversationWebhookEnabledType }

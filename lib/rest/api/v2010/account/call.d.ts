@@ -8,11 +8,13 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V2010 = require('../../V2010');
-import serialize = require('../../../../base/serialize');
 import { FeedbackList } from './call/feedback';
 import { FeedbackListInstance } from './call/feedback';
+import { FeedbackSummaryListInstance } from './call/feedbackSummary';
 import { NotificationList } from './call/notification';
 import { NotificationListInstance } from './call/notification';
+import { PaymentList } from './call/payment';
+import { PaymentListInstance } from './call/payment';
 import { RecordingList } from './call/recording';
 import { RecordingListInstance } from './call/recording';
 import { SerializableClass } from '../../../../interfaces';
@@ -78,17 +80,43 @@ interface CallListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: CallInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams CallInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
   each(opts?: CallListInstanceEachOptions, callback?: (item: CallInstance, done: (err?: Error) => void) => void): void;
-  feedbackSummaries?: object;
+  feedbackSummaries?: FeedbackSummaryListInstance;
   /**
    * Constructs a call
    *
-   * @param sid - The unique string that identifies this resource
+   * @param sid - The SID of the Call resource to fetch
    */
   get(sid: string): CallContext;
+  /**
+   * Retrieve a single target page of CallInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: CallPage) => any): Promise<CallPage>;
   /**
    * Retrieve a single target page of CallInstance records from the API.
    *
@@ -107,10 +135,30 @@ interface CallListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: CallInstance[]) => any): Promise<CallInstance[]>;
+  /**
+   * Lists CallInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: CallListInstanceOptions, callback?: (error: Error | null, items: CallInstance[]) => any): Promise<CallInstance[]>;
+  /**
+   * Retrieve a single page of CallInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: CallPage) => any): Promise<CallPage>;
   /**
    * Retrieve a single page of CallInstance records from the API.
    *
@@ -133,6 +181,11 @@ interface CallListInstance {
  * Options to pass to create
  *
  * @property applicationSid - The SID of the Application resource that will handle the call
+ * @property asyncAmd - Enable asynchronous AMD
+ * @property asyncAmdStatusCallback - The URL we should call to send amd status information to your application
+ * @property asyncAmdStatusCallbackMethod - HTTP Method to use with async_amd_status_callback
+ * @property byoc - BYOC trunk SID (Beta)
+ * @property callReason - Reason for the call (Branded Calls Beta)
  * @property callerId - The phone number, SIP address, or Client identifier that made this call. Phone numbers are in E.164 format (e.g., +16175551212). SIP addresses are formatted as `name@company.com`.
  * @property fallbackMethod - HTTP Method to use with fallback_url
  * @property fallbackUrl - Fallback URL in case of error
@@ -143,7 +196,7 @@ interface CallListInstance {
  * @property machineDetectionSpeechThreshold - Number of milliseconds for measuring stick for the length of the speech activity
  * @property machineDetectionTimeout - Number of seconds to wait for machine detection
  * @property method - HTTP method to use to fetch TwiML
- * @property record - Whether or not to record the call
+ * @property record - Whether to record the call
  * @property recordingChannels - The number of channels in the final recording
  * @property recordingStatusCallback - The URL that we call when the recording is available to be accessed
  * @property recordingStatusCallbackEvent - The recording status events that will trigger calls to the URL specified in `recording_status_callback`
@@ -157,10 +210,16 @@ interface CallListInstance {
  * @property timeout - Number of seconds to wait for an answer
  * @property to - Phone number, SIP address, or client identifier to call
  * @property trim - Set this parameter to control trimming of silence on the recording.
+ * @property twiml - TwiML instructions for the call
  * @property url - The absolute URL that returns TwiML for this call
  */
 interface CallListInstanceCreateOptions {
   applicationSid?: string;
+  asyncAmd?: string;
+  asyncAmdStatusCallback?: string;
+  asyncAmdStatusCallbackMethod?: string;
+  byoc?: string;
+  callReason?: string;
   callerId?: string;
   fallbackMethod?: string;
   fallbackUrl?: string;
@@ -185,6 +244,7 @@ interface CallListInstanceCreateOptions {
   timeout?: number;
   to: string;
   trim?: string;
+  twiml?: string;
   url?: string;
 }
 
@@ -325,14 +385,16 @@ interface CallResource {
   group_sid: string;
   parent_call_sid: string;
   phone_number_sid: string;
-  price: number;
+  price: string;
   price_unit: string;
+  queue_time: string;
   sid: string;
   start_time: Date;
   status: CallStatus;
   subresource_uris: string;
   to: string;
   to_formatted: string;
+  trunk_sid: string;
   uri: string;
 }
 
@@ -347,7 +409,7 @@ declare class CallContext {
    *
    * @param version - Version of the resource
    * @param accountSid - The SID of the Account that created the resource(s) to fetch
-   * @param sid - The unique string that identifies this resource
+   * @param sid - The SID of the Call resource to fetch
    */
   constructor(version: V2010, accountSid: string, sid: string);
 
@@ -359,6 +421,7 @@ declare class CallContext {
    */
   fetch(callback?: (error: Error | null, items: CallInstance) => any): Promise<CallInstance>;
   notifications: NotificationListInstance;
+  payments: PaymentListInstance;
   recordings: RecordingListInstance;
   /**
    * remove a CallInstance
@@ -370,6 +433,12 @@ declare class CallContext {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a CallInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: CallInstance) => any): Promise<CallInstance>;
   /**
    * update a CallInstance
    *
@@ -387,7 +456,7 @@ declare class CallInstance extends SerializableClass {
    * @param version - Version of the resource
    * @param payload - The instance payload
    * @param accountSid - The SID of the Account that created this resource
-   * @param sid - The unique string that identifies this resource
+   * @param sid - The SID of the Call resource to fetch
    */
   constructor(version: V2010, payload: CallPayload, accountSid: string, sid: string);
 
@@ -421,9 +490,14 @@ declare class CallInstance extends SerializableClass {
    */
   notifications(): NotificationListInstance;
   parentCallSid: string;
+  /**
+   * Access the payments
+   */
+  payments(): PaymentListInstance;
   phoneNumberSid: string;
-  price: number;
+  price: string;
   priceUnit: string;
+  queueTime: string;
   /**
    * Access the recordings
    */
@@ -444,6 +518,13 @@ declare class CallInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  trunkSid: string;
+  /**
+   * update a CallInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: CallInstance) => any): Promise<CallInstance>;
   /**
    * update a CallInstance
    *
@@ -477,4 +558,4 @@ declare class CallPage extends Page<V2010, CallPayload, CallResource, CallInstan
   toJSON(): any;
 }
 
-export { CallContext, CallInstance, CallInstanceUpdateOptions, CallList, CallListInstance, CallListInstanceCreateOptions, CallListInstanceEachOptions, CallListInstanceOptions, CallListInstancePageOptions, CallPage, CallPayload, CallResource, CallSolution }
+export { CallContext, CallEvent, CallInstance, CallInstanceUpdateOptions, CallList, CallListInstance, CallListInstanceCreateOptions, CallListInstanceEachOptions, CallListInstanceOptions, CallListInstancePageOptions, CallPage, CallPayload, CallResource, CallSolution, CallStatus, CallUpdateStatus }

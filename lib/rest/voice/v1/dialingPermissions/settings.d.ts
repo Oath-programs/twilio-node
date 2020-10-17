@@ -8,7 +8,6 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V1 = require('../../V1');
-import serialize = require('../../../../base/serialize');
 import { SerializableClass } from '../../../../interfaces';
 
 /**
@@ -25,7 +24,7 @@ declare function SettingsList(version: V1): SettingsListInstance;
 /**
  * Options to pass to update
  *
- * @property dialingPermissionsInheritance - `true` for this sub-account to inherit voice dialing permissions from the Master Project; otherwise `false`
+ * @property dialingPermissionsInheritance - `true` for the sub-account to inherit voice dialing permissions from the Master Project; otherwise `false`
  */
 interface SettingsInstanceUpdateOptions {
   dialingPermissionsInheritance?: boolean;
@@ -83,6 +82,12 @@ declare class SettingsContext {
   /**
    * update a SettingsInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: SettingsInstance) => any): Promise<SettingsInstance>;
+  /**
+   * update a SettingsInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -115,6 +120,12 @@ declare class SettingsInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a SettingsInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: SettingsInstance) => any): Promise<SettingsInstance>;
   /**
    * update a SettingsInstance
    *

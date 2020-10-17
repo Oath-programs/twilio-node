@@ -31,7 +31,7 @@ describe('Document', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                   .documents('ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
@@ -54,7 +54,7 @@ describe('Document', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'created_by': 'created_by',
           'data': {},
@@ -69,7 +69,7 @@ describe('Document', function() {
           'links': {
               'permissions': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents/ETaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Permissions'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -85,10 +85,11 @@ describe('Document', function() {
   );
   it('should generate valid remove request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
+      var opts = {ifMatch: 'if_match'};
       var promise = client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-                                  .documents('ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
+                                  .documents('ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -100,15 +101,17 @@ describe('Document', function() {
       var sid = 'ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://sync.twilio.com/v1/Services/${serviceSid}/Documents/${sid}`;
 
+      var headers = {'If-Match': 'if_match'};
       holodeck.assertHasRequest(new Request({
         method: 'DELETE',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid delete response',
     function(done) {
-      var body = JSON.stringify(null);
+      var body = null;
 
       holodeck.mock(new Response(204, body));
 
@@ -124,7 +127,7 @@ describe('Document', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                   .documents.create();
@@ -146,7 +149,7 @@ describe('Document', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'created_by': 'created_by',
           'data': {},
@@ -161,7 +164,7 @@ describe('Document', function() {
           'links': {
               'permissions': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents/ETaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Permissions'
           }
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 
@@ -177,7 +180,7 @@ describe('Document', function() {
   );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'documents': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -205,7 +208,7 @@ describe('Document', function() {
               'previous_page_url': null,
               'url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                     .documents.each(() => done());
@@ -213,7 +216,7 @@ describe('Document', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'documents': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -241,7 +244,7 @@ describe('Document', function() {
               'previous_page_url': null,
               'url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                     .documents.each({pageSize: 20}, () => done());
@@ -254,7 +257,7 @@ describe('Document', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'documents': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -282,7 +285,7 @@ describe('Document', function() {
               'previous_page_url': null,
               'url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0'
           }
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                     .documents.each({callback: () => done()}, () => fail('wrong callback!'));
@@ -290,7 +293,7 @@ describe('Document', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                   .documents.list();
@@ -312,7 +315,7 @@ describe('Document', function() {
   );
   it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'documents': [],
           'meta': {
               'first_page_url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0',
@@ -323,7 +326,7 @@ describe('Document', function() {
               'previous_page_url': null,
               'url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -339,7 +342,7 @@ describe('Document', function() {
   );
   it('should generate valid read_full response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'documents': [
               {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -367,7 +370,7 @@ describe('Document', function() {
               'previous_page_url': null,
               'url': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents?PageSize=50&Page=0'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -383,10 +386,11 @@ describe('Document', function() {
   );
   it('should generate valid update request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
+      var opts = {ifMatch: 'if_match'};
       var promise = client.sync.v1.services('ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-                                  .documents('ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update();
+                                  .documents('ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -398,15 +402,17 @@ describe('Document', function() {
       var sid = 'ETXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://sync.twilio.com/v1/Services/${serviceSid}/Documents/${sid}`;
 
+      var headers = {'If-Match': 'if_match'};
       holodeck.assertHasRequest(new Request({
         method: 'POST',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid update response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'created_by': 'created_by',
           'data': {},
@@ -421,7 +427,7 @@ describe('Document', function() {
           'links': {
               'permissions': 'https://sync.twilio.com/v1/Services/ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Documents/ETaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Permissions'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 

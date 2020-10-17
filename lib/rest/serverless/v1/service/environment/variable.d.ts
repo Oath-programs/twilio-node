@@ -19,7 +19,7 @@ import { SerializableClass } from '../../../../../interfaces';
  *
  * @param version - Version of the resource
  * @param serviceSid - The SID of the Service that the Variable resource is associated with
- * @param environmentSid - The SID of the environment in which the variable exists
+ * @param environmentSid - The SID of the Environment in which the Variable exists
  */
 declare function VariableList(version: V1, serviceSid: string, environmentSid: string): VariableListInstance;
 
@@ -27,7 +27,7 @@ declare function VariableList(version: V1, serviceSid: string, environmentSid: s
  * Options to pass to update
  *
  * @property key - A string by which the Variable resource can be referenced
- * @property value - A string that contains the actual value of the variable
+ * @property value - A string that contains the actual value of the Variable
  */
 interface VariableInstanceUpdateOptions {
   key?: string;
@@ -58,6 +58,21 @@ interface VariableListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: VariableInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams VariableInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
@@ -76,6 +91,17 @@ interface VariableListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: VariablePage) => any): Promise<VariablePage>;
+  /**
+   * Retrieve a single target page of VariableInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -86,10 +112,30 @@ interface VariableListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: VariableInstance[]) => any): Promise<VariableInstance[]>;
+  /**
+   * Lists VariableInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: VariableListInstanceOptions, callback?: (error: Error | null, items: VariableInstance[]) => any): Promise<VariableInstance[]>;
+  /**
+   * Retrieve a single page of VariableInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: VariablePage) => any): Promise<VariablePage>;
   /**
    * Retrieve a single page of VariableInstance records from the API.
    *
@@ -112,7 +158,7 @@ interface VariableListInstance {
  * Options to pass to create
  *
  * @property key - A string by which the Variable resource can be referenced
- * @property value - A string that contains the actual value of the variable
+ * @property value - A string that contains the actual value of the Variable
  */
 interface VariableListInstanceCreateOptions {
   key: string;
@@ -207,7 +253,7 @@ declare class VariableContext {
    *
    * @param version - Version of the resource
    * @param serviceSid - The SID of the Service to fetch the Variable resource from
-   * @param environmentSid - The SID of the environment with the Variable resource to fetch
+   * @param environmentSid - The SID of the Environment with the Variable resource to fetch
    * @param sid - The SID of the Variable resource to fetch
    */
   constructor(version: V1, serviceSid: string, environmentSid: string, sid: string);
@@ -231,6 +277,12 @@ declare class VariableContext {
   /**
    * update a VariableInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: VariableInstance) => any): Promise<VariableInstance>;
+  /**
+   * update a VariableInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -249,7 +301,7 @@ declare class VariableInstance extends SerializableClass {
    * @param version - Version of the resource
    * @param payload - The instance payload
    * @param serviceSid - The SID of the Service that the Variable resource is associated with
-   * @param environmentSid - The SID of the environment in which the variable exists
+   * @param environmentSid - The SID of the Environment in which the Variable exists
    * @param sid - The SID of the Variable resource to fetch
    */
   constructor(version: V1, payload: VariablePayload, serviceSid: string, environmentSid: string, sid: string);
@@ -278,6 +330,12 @@ declare class VariableInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a VariableInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: VariableInstance) => any): Promise<VariableInstance>;
   /**
    * update a VariableInstance
    *

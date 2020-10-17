@@ -31,7 +31,7 @@ describe('Conference', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                     .conferences('CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
@@ -54,7 +54,7 @@ describe('Conference', function() {
   );
   it('should generate valid fetch_valid_mixer_zone response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'date_created': 'Fri, 18 Feb 2011 19:26:50 +0000',
@@ -67,8 +67,10 @@ describe('Conference', function() {
               'participants': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants.json',
               'recordings': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Recordings.json'
           },
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
+          'reason_conference_ended': 'last-participant-left',
+          'call_sid_ending_conference': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -84,7 +86,7 @@ describe('Conference', function() {
   );
   it('should generate valid fetch_valid_region_in_progress response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'date_created': 'Fri, 18 Feb 2011 19:26:50 +0000',
@@ -97,8 +99,10 @@ describe('Conference', function() {
               'participants': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants.json',
               'recordings': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Recordings.json'
           },
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
+          'reason_conference_ended': null,
+          'call_sid_ending_conference': null
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -114,7 +118,7 @@ describe('Conference', function() {
   );
   it('should generate valid fetch_without_mixer_zone_integer_status response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'date_created': 'Fri, 18 Feb 2011 19:26:50 +0000',
@@ -127,8 +131,10 @@ describe('Conference', function() {
               'participants': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants.json',
               'recordings': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Recordings.json'
           },
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
+          'reason_conference_ended': 'participant-with-end-conference-on-exit-left',
+          'call_sid_ending_conference': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -144,7 +150,7 @@ describe('Conference', function() {
   );
   it('should generate valid fetch_unknown_mixer_zone_init_integer_status response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'date_created': 'Fri, 18 Feb 2011 19:26:50 +0000',
@@ -157,8 +163,10 @@ describe('Conference', function() {
               'participants': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants.json',
               'recordings': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Recordings.json'
           },
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
+          'reason_conference_ended': 'participant-with-end-conference-on-exit-left',
+          'call_sid_ending_conference': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -174,7 +182,7 @@ describe('Conference', function() {
   );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -189,7 +197,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -204,7 +214,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -219,7 +231,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFcccccccccccccccccccccccccccccccc.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -230,7 +244,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 0,
           'end': 2
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .conferences.each(() => done());
@@ -238,7 +252,7 @@ describe('Conference', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -253,7 +267,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -268,7 +284,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -283,7 +301,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFcccccccccccccccccccccccccccccccc.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -294,7 +314,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 0,
           'end': 2
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .conferences.each({pageSize: 20}, () => done());
@@ -307,7 +327,7 @@ describe('Conference', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -322,7 +342,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -337,7 +359,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -352,7 +376,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFcccccccccccccccccccccccccccccccc.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -363,7 +389,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 0,
           'end': 2
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                       .conferences.each({callback: () => done()}, () => fail('wrong callback!'));
@@ -371,7 +397,7 @@ describe('Conference', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                     .conferences.list();
@@ -393,7 +419,7 @@ describe('Conference', function() {
   );
   it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=init&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=50&Page=0',
           'next_page_uri': null,
@@ -403,7 +429,7 @@ describe('Conference', function() {
           'page_size': 50,
           'start': 0,
           'end': 0
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -419,7 +445,7 @@ describe('Conference', function() {
   );
   it('should generate valid read_full response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -434,7 +460,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -449,7 +477,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -464,7 +494,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFcccccccccccccccccccccccccccccccc.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -475,7 +507,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 0,
           'end': 2
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -491,7 +523,7 @@ describe('Conference', function() {
   );
   it('should generate valid read_next response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -506,7 +538,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFdddddddddddddddddddddddddddddddd.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -521,7 +555,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -536,7 +572,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFffffffffffffffffffffffffffffffff.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -547,7 +585,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 3,
           'end': 5
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -563,7 +601,7 @@ describe('Conference', function() {
   );
   it('should generate valid read_previous response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'conferences': [
               {
                   'status': 'in-progress',
@@ -578,7 +616,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -593,7 +633,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               },
               {
                   'status': 'in-progress',
@@ -608,7 +650,9 @@ describe('Conference', function() {
                   'friendly_name': 'friendly_name',
                   'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFcccccccccccccccccccccccccccccccc.json',
                   'api_version': '2010-04-01',
-                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                  'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                  'reason_conference_ended': null,
+                  'call_sid_ending_conference': null
               }
           ],
           'first_page_uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences.json?Status=in-progress&DateUpdated%3E=2018-11-12&DateUpdated%3C=2018-11-11&DateCreated=2008-01-03&FriendlyName=friendly_name&DateUpdated=2018-11-13&DateCreated%3C=2008-01-01&DateCreated%3E=2008-01-02&PageSize=3&Page=0',
@@ -619,7 +663,7 @@ describe('Conference', function() {
           'page_size': 3,
           'start': 0,
           'end': 2
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -635,7 +679,7 @@ describe('Conference', function() {
   );
   it('should generate valid update request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.api.v2010.accounts('ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                     .conferences('CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update();
@@ -658,7 +702,7 @@ describe('Conference', function() {
   );
   it('should generate valid update_end_conference response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'api_version': '2010-04-01',
           'date_created': 'Mon, 22 Aug 2011 20:58:45 +0000',
@@ -671,8 +715,10 @@ describe('Conference', function() {
               'participants': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants.json',
               'recordings': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Recordings.json'
           },
-          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json'
-      });
+          'uri': '/2010-04-01/Accounts/ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Conferences/CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json',
+          'reason_conference_ended': 'conference-ended-via-api',
+          'call_sid_ending_conference': null
+      };
 
       holodeck.mock(new Response(200, body));
 
