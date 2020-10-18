@@ -25,6 +25,12 @@ interface FeedbackListInstance {
   /**
    * create a FeedbackInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: FeedbackInstance) => any): Promise<FeedbackInstance>;
+  /**
+   * create a FeedbackInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -108,4 +114,4 @@ declare class FeedbackPage extends Page<V2010, FeedbackPayload, FeedbackResource
   toJSON(): any;
 }
 
-export { FeedbackInstance, FeedbackList, FeedbackListInstance, FeedbackListInstanceCreateOptions, FeedbackPage, FeedbackPayload, FeedbackResource, FeedbackSolution }
+export { FeedbackInstance, FeedbackList, FeedbackListInstance, FeedbackListInstanceCreateOptions, FeedbackOutcome, FeedbackPage, FeedbackPayload, FeedbackResource, FeedbackSolution }

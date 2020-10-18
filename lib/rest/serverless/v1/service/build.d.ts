@@ -8,7 +8,8 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V1 = require('../../V1');
-import serialize = require('../../../../base/serialize');
+import { BuildStatusList } from './build/buildStatus';
+import { BuildStatusListInstance } from './build/buildStatus';
 import { SerializableClass } from '../../../../interfaces';
 
 type BuildStatus = 'building'|'completed'|'failed';
@@ -33,10 +34,31 @@ interface BuildListInstance {
   /**
    * create a BuildInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: BuildInstance) => any): Promise<BuildInstance>;
+  /**
+   * create a BuildInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
   create(opts?: BuildListInstanceCreateOptions, callback?: (error: Error | null, item: BuildInstance) => any): Promise<BuildInstance>;
+  /**
+   * Streams BuildInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: BuildInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams BuildInstance records from the API.
    *
@@ -67,6 +89,17 @@ interface BuildListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: BuildPage) => any): Promise<BuildPage>;
+  /**
+   * Retrieve a single target page of BuildInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -77,10 +110,30 @@ interface BuildListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: BuildInstance[]) => any): Promise<BuildInstance[]>;
+  /**
+   * Lists BuildInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: BuildListInstanceOptions, callback?: (error: Error | null, items: BuildInstance[]) => any): Promise<BuildInstance[]>;
+  /**
+   * Retrieve a single page of BuildInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: BuildPage) => any): Promise<BuildPage>;
   /**
    * Retrieve a single page of BuildInstance records from the API.
    *
@@ -102,9 +155,9 @@ interface BuildListInstance {
 /**
  * Options to pass to create
  *
- * @property assetVersions - The list of AssetVersion resource SIDs to include in the build
- * @property dependencies - A list of objects that describe the Dependencies included in the build
- * @property functionVersions - The list of the Variable resource SIDs to include in the build
+ * @property assetVersions - The list of Asset Version resource SIDs to include in the Build
+ * @property dependencies - A list of objects that describe the Dependencies included in the Build
+ * @property functionVersions - The list of the Function Version resource SIDs to include in the Build
  */
 interface BuildListInstanceCreateOptions {
   assetVersions?: string | string[];
@@ -179,6 +232,7 @@ interface BuildResource {
   date_updated: Date;
   dependencies: object[];
   function_versions: object[];
+  links: string;
   service_sid: string;
   sid: string;
   status: BuildStatus;
@@ -204,6 +258,7 @@ declare class BuildContext {
    */
   constructor(version: V1, serviceSid: string, sid: string);
 
+  buildStatus: BuildStatusListInstance;
   /**
    * fetch a BuildInstance
    *
@@ -241,6 +296,10 @@ declare class BuildInstance extends SerializableClass {
   private _proxy: BuildContext;
   accountSid: string;
   assetVersions: object[];
+  /**
+   * Access the buildStatus
+   */
+  buildStatus(): BuildStatusListInstance;
   dateCreated: Date;
   dateUpdated: Date;
   dependencies: object[];
@@ -251,6 +310,7 @@ declare class BuildInstance extends SerializableClass {
    */
   fetch(callback?: (error: Error | null, items: BuildInstance) => any): Promise<BuildInstance>;
   functionVersions: object[];
+  links: string;
   /**
    * remove a BuildInstance
    *
@@ -294,4 +354,4 @@ declare class BuildPage extends Page<V1, BuildPayload, BuildResource, BuildInsta
   toJSON(): any;
 }
 
-export { BuildContext, BuildInstance, BuildList, BuildListInstance, BuildListInstanceCreateOptions, BuildListInstanceEachOptions, BuildListInstanceOptions, BuildListInstancePageOptions, BuildPage, BuildPayload, BuildResource, BuildSolution }
+export { BuildContext, BuildInstance, BuildList, BuildListInstance, BuildListInstanceCreateOptions, BuildListInstanceEachOptions, BuildListInstanceOptions, BuildListInstancePageOptions, BuildPage, BuildPayload, BuildResource, BuildSolution, BuildStatus }

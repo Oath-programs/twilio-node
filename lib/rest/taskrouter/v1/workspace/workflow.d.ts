@@ -31,6 +31,7 @@ declare function WorkflowList(version: V1, workspaceSid: string): WorkflowListIn
  * @property configuration - A JSON string that contains the rules to apply to the Workflow
  * @property fallbackAssignmentCallbackUrl - The URL that we should call when a call to the `assignment_callback_url` fails
  * @property friendlyName -  descriptive string that you create to describe the Workflow resource
+ * @property reEvaluateTasks - Whether or not to re-evaluate Tasks
  * @property taskReservationTimeout - How long TaskRouter will wait for a confirmation response from your application after it assigns a Task to a Worker
  */
 interface WorkflowInstanceUpdateOptions {
@@ -38,6 +39,7 @@ interface WorkflowInstanceUpdateOptions {
   configuration?: string;
   fallbackAssignmentCallbackUrl?: string;
   friendlyName?: string;
+  reEvaluateTasks?: string;
   taskReservationTimeout?: number;
 }
 
@@ -53,6 +55,21 @@ interface WorkflowListInstance {
    * @param callback - Callback to handle processed record
    */
   create(opts: WorkflowListInstanceCreateOptions, callback?: (error: Error | null, item: WorkflowInstance) => any): Promise<WorkflowInstance>;
+  /**
+   * Streams WorkflowInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: WorkflowInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams WorkflowInstance records from the API.
    *
@@ -83,6 +100,17 @@ interface WorkflowListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: WorkflowPage) => any): Promise<WorkflowPage>;
+  /**
+   * Retrieve a single target page of WorkflowInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -93,10 +121,30 @@ interface WorkflowListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: WorkflowInstance[]) => any): Promise<WorkflowInstance[]>;
+  /**
+   * Lists WorkflowInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: WorkflowListInstanceOptions, callback?: (error: Error | null, items: WorkflowInstance[]) => any): Promise<WorkflowInstance[]>;
+  /**
+   * Retrieve a single page of WorkflowInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: WorkflowPage) => any): Promise<WorkflowPage>;
   /**
    * Retrieve a single page of WorkflowInstance records from the API.
    *
@@ -251,6 +299,12 @@ declare class WorkflowContext {
   /**
    * update a WorkflowInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: WorkflowInstance) => any): Promise<WorkflowInstance>;
+  /**
+   * update a WorkflowInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -309,6 +363,12 @@ declare class WorkflowInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a WorkflowInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: WorkflowInstance) => any): Promise<WorkflowInstance>;
   /**
    * update a WorkflowInstance
    *

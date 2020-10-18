@@ -31,7 +31,7 @@ describe('Build', function() {
   });
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.serverless.v1.services('ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                         .builds.list();
@@ -53,7 +53,7 @@ describe('Build', function() {
   );
   it('should generate valid read_empty response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'builds': [],
           'meta': {
               'first_page_url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds?PageSize=50&Page=0',
@@ -64,7 +64,7 @@ describe('Build', function() {
               'previous_page_url': null,
               'url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds?PageSize=50&Page=0'
           }
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -80,7 +80,7 @@ describe('Build', function() {
   );
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.serverless.v1.services('ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                         .builds('ZBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
@@ -103,7 +103,7 @@ describe('Build', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'ZB00000000000000000000000000000000',
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'service_sid': 'ZS00000000000000000000000000000000',
@@ -114,7 +114,7 @@ describe('Build', function() {
                   'service_sid': 'ZS00000000000000000000000000000000',
                   'asset_sid': 'ZH00000000000000000000000000000000',
                   'date_created': '2018-11-10T20:00:00Z',
-                  'path': 'asset-path',
+                  'path': '/asset-path',
                   'visibility': 'PUBLIC'
               }
           ],
@@ -125,7 +125,7 @@ describe('Build', function() {
                   'service_sid': 'ZS00000000000000000000000000000000',
                   'function_sid': 'ZH00000000000000000000000000000001',
                   'date_created': '2018-11-10T20:00:00Z',
-                  'path': 'function-path',
+                  'path': '/function-path',
                   'visibility': 'PUBLIC'
               }
           ],
@@ -138,8 +138,11 @@ describe('Build', function() {
           'status': 'deploying',
           'date_created': '2018-11-10T20:00:00Z',
           'date_updated': '2018-11-10T20:00:00Z',
-          'url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000'
-      });
+          'url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000',
+          'links': {
+              'build_status': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000/Status'
+          }
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -155,7 +158,7 @@ describe('Build', function() {
   );
   it('should generate valid remove request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.serverless.v1.services('ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                         .builds('ZBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
@@ -178,7 +181,7 @@ describe('Build', function() {
   );
   it('should generate valid delete response',
     function(done) {
-      var body = JSON.stringify(null);
+      var body = null;
 
       holodeck.mock(new Response(204, body));
 
@@ -194,7 +197,7 @@ describe('Build', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.serverless.v1.services('ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                         .builds.create();
@@ -216,7 +219,7 @@ describe('Build', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'sid': 'ZB00000000000000000000000000000000',
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'service_sid': 'ZS00000000000000000000000000000000',
@@ -227,7 +230,7 @@ describe('Build', function() {
                   'service_sid': 'ZS00000000000000000000000000000000',
                   'asset_sid': 'ZH00000000000000000000000000000000',
                   'date_created': '2018-11-10T20:00:00Z',
-                  'path': 'asset-path',
+                  'path': '/asset-path',
                   'visibility': 'PUBLIC'
               }
           ],
@@ -238,7 +241,7 @@ describe('Build', function() {
                   'service_sid': 'ZS00000000000000000000000000000000',
                   'function_sid': 'ZH00000000000000000000000000000001',
                   'date_created': '2018-11-10T20:00:00Z',
-                  'path': 'function-path',
+                  'path': '/function-path',
                   'visibility': 'PUBLIC'
               }
           ],
@@ -251,8 +254,11 @@ describe('Build', function() {
           'status': 'building',
           'date_created': '2018-11-10T20:00:00Z',
           'date_updated': '2018-11-10T20:00:00Z',
-          'url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000'
-      });
+          'url': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000',
+          'links': {
+              'build_status': 'https://serverless.twilio.com/v1/Services/ZS00000000000000000000000000000000/Builds/ZB00000000000000000000000000000000/Status'
+          }
+      };
 
       holodeck.mock(new Response(201, body));
 

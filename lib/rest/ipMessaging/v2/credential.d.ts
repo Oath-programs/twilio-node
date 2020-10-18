@@ -8,7 +8,6 @@
 import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
 import V2 = require('../V2');
-import serialize = require('../../../base/serialize');
 import { SerializableClass } from '../../../interfaces';
 
 type CredentialPushService = 'gcm'|'apn'|'fcm';
@@ -63,6 +62,21 @@ interface CredentialListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: CredentialInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams CredentialInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
@@ -81,6 +95,17 @@ interface CredentialListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: CredentialPage) => any): Promise<CredentialPage>;
+  /**
+   * Retrieve a single target page of CredentialInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -91,10 +116,30 @@ interface CredentialListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: CredentialInstance[]) => any): Promise<CredentialInstance[]>;
+  /**
+   * Lists CredentialInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: CredentialListInstanceOptions, callback?: (error: Error | null, items: CredentialInstance[]) => any): Promise<CredentialInstance[]>;
+  /**
+   * Retrieve a single page of CredentialInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: CredentialPage) => any): Promise<CredentialPage>;
   /**
    * Retrieve a single page of CredentialInstance records from the API.
    *
@@ -237,6 +282,12 @@ declare class CredentialContext {
   /**
    * update a CredentialInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: CredentialInstance) => any): Promise<CredentialInstance>;
+  /**
+   * update a CredentialInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -281,6 +332,12 @@ declare class CredentialInstance extends SerializableClass {
   /**
    * update a CredentialInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: CredentialInstance) => any): Promise<CredentialInstance>;
+  /**
+   * update a CredentialInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -311,4 +368,4 @@ declare class CredentialPage extends Page<V2, CredentialPayload, CredentialResou
   toJSON(): any;
 }
 
-export { CredentialContext, CredentialInstance, CredentialInstanceUpdateOptions, CredentialList, CredentialListInstance, CredentialListInstanceCreateOptions, CredentialListInstanceEachOptions, CredentialListInstanceOptions, CredentialListInstancePageOptions, CredentialPage, CredentialPayload, CredentialResource, CredentialSolution }
+export { CredentialContext, CredentialInstance, CredentialInstanceUpdateOptions, CredentialList, CredentialListInstance, CredentialListInstanceCreateOptions, CredentialListInstanceEachOptions, CredentialListInstanceOptions, CredentialListInstancePageOptions, CredentialPage, CredentialPayload, CredentialPushService, CredentialResource, CredentialSolution }

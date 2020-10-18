@@ -8,7 +8,6 @@
 import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
 import V1 = require('../V1');
-import serialize = require('../../../base/serialize');
 import { SerializableClass } from '../../../interfaces';
 
 type FlexFlowChannelType = 'web'|'sms'|'facebook'|'whatsapp'|'line'|'custom';
@@ -34,13 +33,14 @@ declare function FlexFlowList(version: V1): FlexFlowListInstance;
  * @property integration.creationOnMessage - Whether to create a task when the first message arrives
  * @property integration.flowSid - The SID of the Flow
  * @property integration.priority - The task priority of a new task
+ * @property integration.retryCount - The number of times to retry the webhook if the first attempt fails
  * @property integration.timeout - The task timeout in seconds for a new task
  * @property integration.url - The External Webhook URL
  * @property integration.workflowSid - The Workflow SID for a new task
  * @property integration.workspaceSid - The Workspace SID for a new task
  * @property integrationType - The integration type
- * @property janitorEnabled - Boolean flag for enabling or disabling the Janitor
- * @property longLived - Whether new channels created are long-lived
+ * @property janitorEnabled - Remove active Proxy sessions if the corresponding Task is deleted.
+ * @property longLived - Reuse this chat channel for future interactions with a contact
  */
 interface FlexFlowInstanceUpdateOptions {
   channelType?: FlexFlowChannelType;
@@ -57,6 +57,7 @@ interface FlexFlowInstanceUpdateOptions {
     timeout?: number;
     priority?: number;
     creationOnMessage?: boolean;
+    retryCount?: number;
   };
   integrationType?: FlexFlowIntegrationType;
   janitorEnabled?: boolean;
@@ -87,6 +88,21 @@ interface FlexFlowListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: FlexFlowInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams FlexFlowInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
@@ -105,6 +121,17 @@ interface FlexFlowListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: FlexFlowPage) => any): Promise<FlexFlowPage>;
+  /**
+   * Retrieve a single target page of FlexFlowInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -115,10 +142,30 @@ interface FlexFlowListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: FlexFlowInstance[]) => any): Promise<FlexFlowInstance[]>;
+  /**
+   * Lists FlexFlowInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: FlexFlowListInstanceOptions, callback?: (error: Error | null, items: FlexFlowInstance[]) => any): Promise<FlexFlowInstance[]>;
+  /**
+   * Retrieve a single page of FlexFlowInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: FlexFlowPage) => any): Promise<FlexFlowPage>;
   /**
    * Retrieve a single page of FlexFlowInstance records from the API.
    *
@@ -149,13 +196,14 @@ interface FlexFlowListInstance {
  * @property integration.creationOnMessage - Whether to create a task when the first message arrives
  * @property integration.flowSid - The SID of the Flow
  * @property integration.priority - The task priority of a new task
+ * @property integration.retryCount - The number of times to retry the webhook if the first attempt fails
  * @property integration.timeout - The task timeout in seconds for a new task
  * @property integration.url - The External Webhook URL
  * @property integration.workflowSid - The Workflow SID for a new task
  * @property integration.workspaceSid - The Workspace SID for a new task
  * @property integrationType - The integration type
- * @property janitorEnabled - Boolean flag for enabling or disabling the Janitor
- * @property longLived - Whether new channels are long-lived
+ * @property janitorEnabled - Remove active Proxy sessions if the corresponding Task is deleted
+ * @property longLived - Reuse this chat channel for future interactions with a contact
  */
 interface FlexFlowListInstanceCreateOptions {
   channelType: FlexFlowChannelType;
@@ -172,6 +220,7 @@ interface FlexFlowListInstanceCreateOptions {
     timeout?: number;
     priority?: number;
     creationOnMessage?: boolean;
+    retryCount?: number;
   };
   integrationType?: FlexFlowIntegrationType;
   janitorEnabled?: boolean;
@@ -293,6 +342,12 @@ declare class FlexFlowContext {
   /**
    * update a FlexFlowInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: FlexFlowInstance) => any): Promise<FlexFlowInstance>;
+  /**
+   * update a FlexFlowInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -325,7 +380,7 @@ declare class FlexFlowInstance extends SerializableClass {
    */
   fetch(callback?: (error: Error | null, items: FlexFlowInstance) => any): Promise<FlexFlowInstance>;
   friendlyName: string;
-  integration: object;
+  integration: any;
   integrationType: FlexFlowIntegrationType;
   janitorEnabled: boolean;
   longLived: boolean;
@@ -340,6 +395,12 @@ declare class FlexFlowInstance extends SerializableClass {
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a FlexFlowInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: FlexFlowInstance) => any): Promise<FlexFlowInstance>;
   /**
    * update a FlexFlowInstance
    *
@@ -373,4 +434,4 @@ declare class FlexFlowPage extends Page<V1, FlexFlowPayload, FlexFlowResource, F
   toJSON(): any;
 }
 
-export { FlexFlowContext, FlexFlowInstance, FlexFlowInstanceUpdateOptions, FlexFlowList, FlexFlowListInstance, FlexFlowListInstanceCreateOptions, FlexFlowListInstanceEachOptions, FlexFlowListInstanceOptions, FlexFlowListInstancePageOptions, FlexFlowPage, FlexFlowPayload, FlexFlowResource, FlexFlowSolution }
+export { FlexFlowChannelType, FlexFlowContext, FlexFlowInstance, FlexFlowInstanceUpdateOptions, FlexFlowIntegrationType, FlexFlowList, FlexFlowListInstance, FlexFlowListInstanceCreateOptions, FlexFlowListInstanceEachOptions, FlexFlowListInstanceOptions, FlexFlowListInstancePageOptions, FlexFlowPage, FlexFlowPayload, FlexFlowResource, FlexFlowSolution }

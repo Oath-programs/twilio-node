@@ -31,10 +31,11 @@ describe('Participant', function() {
   });
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
+      var opts = {xTwilioWebhookEnabled: 'true'};
       var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-                                           .participants.create();
+                                           .participants.create(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -45,29 +46,32 @@ describe('Participant', function() {
       var conversationSid = 'CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://conversations.twilio.com/v1/Conversations/${conversationSid}/Participants`;
 
+      var headers = {'X-Twilio-Webhook-Enabled': 'true'};
       holodeck.assertHasRequest(new Request({
         method: 'POST',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid create_sms response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'identity': 'null',
+          'identity': null,
           'attributes': '{ \'role\': \'driver\' }',
           'messaging_binding': {
               'type': 'sms',
               'address': '+15558675310',
               'proxy_address': '+15017122661'
           },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2015-12-16T22:18:37Z',
           'date_updated': '2015-12-16T22:18:38Z',
           'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 
@@ -83,17 +87,108 @@ describe('Participant', function() {
   );
   it('should generate valid create_chat response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'identity': 'IDENTITY',
           'attributes': '{ \'role\': \'driver\' }',
           'messaging_binding': null,
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2015-12-16T22:18:37Z',
           'date_updated': '2015-12-16T22:18:38Z',
           'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
+
+      holodeck.mock(new Response(201, body));
+
+      var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                                           .participants.create();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
+  it('should generate valid create_gmms response',
+    function(done) {
+      var body = {
+          'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'identity': 'IDENTITY',
+          'attributes': '{ \'role\': \'driver\' }',
+          'messaging_binding': {
+              'type': 'sms',
+              'projected_address': '+15017122661'
+          },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'date_created': '2015-12-16T22:18:37Z',
+          'date_updated': '2015-12-16T22:18:38Z',
+          'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
+
+      holodeck.mock(new Response(201, body));
+
+      var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                                           .participants.create();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
+  it('should generate valid create_gmms_chat_no_attributes response',
+    function(done) {
+      var body = {
+          'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'identity': 'IDENTITY',
+          'attributes': '{}',
+          'messaging_binding': {
+              'type': 'sms',
+              'projected_address': '+15017122661'
+          },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'date_created': '2020-07-01T22:18:37Z',
+          'date_updated': '2020-07-01T22:18:37Z',
+          'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
+
+      holodeck.mock(new Response(201, body));
+
+      var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                                           .participants.create();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
+  it('should generate valid create_gmms_sms_no_attributes response',
+    function(done) {
+      var body = {
+          'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'identity': null,
+          'attributes': '{}',
+          'messaging_binding': {
+              'type': 'sms',
+              'address': '+15017122661'
+          },
+          'role_sid': null,
+          'date_created': '2020-07-01T22:18:37Z',
+          'date_updated': '2020-07-01T22:18:37Z',
+          'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
 
       holodeck.mock(new Response(201, body));
 
@@ -109,10 +204,11 @@ describe('Participant', function() {
   );
   it('should generate valid update request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
+      var opts = {xTwilioWebhookEnabled: 'true'};
       var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-                                           .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update();
+                                           .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -124,29 +220,62 @@ describe('Participant', function() {
       var sid = 'MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://conversations.twilio.com/v1/Conversations/${conversationSid}/Participants/${sid}`;
 
+      var headers = {'X-Twilio-Webhook-Enabled': 'true'};
       holodeck.assertHasRequest(new Request({
         method: 'POST',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid update response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'identity': 'null',
+          'identity': null,
           'attributes': '{ \'role\': \'driver\' }',
           'messaging_binding': {
               'type': 'sms',
               'address': '+15558675310',
               'proxy_address': '+15017122661'
           },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2015-12-16T22:18:37Z',
           'date_updated': '2015-12-16T22:18:38Z',
           'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
+
+      holodeck.mock(new Response(200, body));
+
+      var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                                           .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').update();
+      promise.then(function(response) {
+        expect(response).toBeDefined();
+        done();
+      }, function() {
+        throw new Error('failed');
+      }).done();
+    }
+  );
+  it('should generate valid update_gmms response',
+    function(done) {
+      var body = {
+          'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'identity': 'id',
+          'attributes': '{ \'role\': \'driver\' }',
+          'messaging_binding': {
+              'type': 'sms',
+              'projected_address': '+15017122661'
+          },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'date_created': '2015-12-16T22:18:37Z',
+          'date_updated': '2015-12-16T22:18:38Z',
+          'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -162,10 +291,11 @@ describe('Participant', function() {
   );
   it('should generate valid remove request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
+      var opts = {xTwilioWebhookEnabled: 'true'};
       var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-                                           .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove();
+                                           .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').remove(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -177,15 +307,17 @@ describe('Participant', function() {
       var sid = 'MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
       var url = `https://conversations.twilio.com/v1/Conversations/${conversationSid}/Participants/${sid}`;
 
+      var headers = {'X-Twilio-Webhook-Enabled': 'true'};
       holodeck.assertHasRequest(new Request({
         method: 'DELETE',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid delete response',
     function(done) {
-      var body = JSON.stringify(null);
+      var body = null;
 
       holodeck.mock(new Response(204, body));
 
@@ -201,7 +333,7 @@ describe('Participant', function() {
   );
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                            .participants('MBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX').fetch();
@@ -224,21 +356,22 @@ describe('Participant', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'identity': 'null',
+          'identity': null,
           'attributes': '{ \'role\': \'driver\' }',
           'messaging_binding': {
               'type': 'sms',
               'address': '+15558675310',
               'proxy_address': '+15017122661'
           },
+          'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2016-03-24T21:05:50Z',
           'date_updated': '2016-03-24T21:05:50Z',
           'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -254,7 +387,7 @@ describe('Participant', function() {
   );
   it('should treat the first each arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -269,13 +402,14 @@ describe('Participant', function() {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'identity': 'null',
+                  'identity': null,
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': {
                       'type': 'sms',
                       'address': '+15558675310',
                       'proxy_address': '+15017122661'
                   },
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -287,12 +421,13 @@ describe('Participant', function() {
                   'identity': 'IDENTITY',
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': null,
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                              .participants.each(() => done());
@@ -300,7 +435,7 @@ describe('Participant', function() {
   );
   it('should treat the second arg as a callback',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -315,13 +450,14 @@ describe('Participant', function() {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'identity': 'null',
+                  'identity': null,
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': {
                       'type': 'sms',
                       'address': '+15558675310',
                       'proxy_address': '+15017122661'
                   },
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -333,12 +469,13 @@ describe('Participant', function() {
                   'identity': 'IDENTITY',
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': null,
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                              .participants.each({pageSize: 20}, () => done());
@@ -351,7 +488,7 @@ describe('Participant', function() {
   );
   it('should find the callback in the opts object',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -366,13 +503,14 @@ describe('Participant', function() {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'identity': 'null',
+                  'identity': null,
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': {
                       'type': 'sms',
                       'address': '+15558675310',
                       'proxy_address': '+15017122661'
                   },
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -384,12 +522,13 @@ describe('Participant', function() {
                   'identity': 'IDENTITY',
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': null,
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
       holodeck.mock(new Response(200, body));
       client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                              .participants.each({callback: () => done()}, () => fail('wrong callback!'));
@@ -397,7 +536,7 @@ describe('Participant', function() {
   );
   it('should generate valid list request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.conversations.v1.conversations('CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
                                            .participants.list();
@@ -419,7 +558,7 @@ describe('Participant', function() {
   );
   it('should generate valid read response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'meta': {
               'page': 0,
               'page_size': 50,
@@ -434,13 +573,14 @@ describe('Participant', function() {
                   'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'conversation_sid': 'CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'sid': 'MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  'identity': 'null',
+                  'identity': null,
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': {
                       'type': 'sms',
                       'address': '+15558675310',
                       'proxy_address': '+15017122661'
                   },
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -452,12 +592,13 @@ describe('Participant', function() {
                   'identity': 'IDENTITY',
                   'attributes': '{ \'role\': \'driver\' }',
                   'messaging_binding': null,
+                  'role_sid': 'RLaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
                   'date_created': '2016-03-24T21:05:50Z',
                   'date_updated': '2016-03-24T21:05:50Z',
                   'url': 'https://conversations.twilio.com/v1/Conversations/CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Participants/MBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           ]
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 

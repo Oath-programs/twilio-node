@@ -42,6 +42,21 @@ interface LogListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: LogInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams LogInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
@@ -60,6 +75,17 @@ interface LogListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: LogPage) => any): Promise<LogPage>;
+  /**
+   * Retrieve a single target page of LogInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -70,10 +96,30 @@ interface LogListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: LogInstance[]) => any): Promise<LogInstance[]>;
+  /**
+   * Lists LogInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: LogListInstanceOptions, callback?: (error: Error | null, items: LogInstance[]) => any): Promise<LogInstance[]>;
+  /**
+   * Retrieve a single page of LogInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: LogPage) => any): Promise<LogPage>;
   /**
    * Retrieve a single page of LogInstance records from the API.
    *
@@ -99,6 +145,7 @@ interface LogListInstance {
  *                         Function to process each record. If this and a positional
  *                         callback are passed, this one will be used
  * @property done - Function to be called upon completion of streaming
+ * @property endDate - The date and time before which the Log resource must have been created.
  * @property functionSid - The SID of the function whose invocation produced the Log resources to read
  * @property limit -
  *                         Upper limit for the number of records to return.
@@ -110,18 +157,22 @@ interface LogListInstance {
  *                         If no pageSize is defined but a limit is defined,
  *                         each() will attempt to read the limit with the most efficient
  *                         page size, i.e. min(limit, 1000)
+ * @property startDate - The date and time after which the Log resources must have been created.
  */
 interface LogListInstanceEachOptions {
   callback?: (item: LogInstance, done: (err?: Error) => void) => void;
   done?: Function;
+  endDate?: Date;
   functionSid?: string;
   limit?: number;
   pageSize?: number;
+  startDate?: Date;
 }
 
 /**
  * Options to pass to list
  *
+ * @property endDate - The date and time before which the Log resource must have been created.
  * @property functionSid - The SID of the function whose invocation produced the Log resources to read
  * @property limit -
  *                         Upper limit for the number of records to return.
@@ -133,26 +184,33 @@ interface LogListInstanceEachOptions {
  *                         If no page_size is defined but a limit is defined,
  *                         list() will attempt to read the limit with the most
  *                         efficient page size, i.e. min(limit, 1000)
+ * @property startDate - The date and time after which the Log resources must have been created.
  */
 interface LogListInstanceOptions {
+  endDate?: Date;
   functionSid?: string;
   limit?: number;
   pageSize?: number;
+  startDate?: Date;
 }
 
 /**
  * Options to pass to page
  *
+ * @property endDate - The date and time before which the Log resource must have been created.
  * @property functionSid - The SID of the function whose invocation produced the Log resources to read
  * @property pageNumber - Page Number, this value is simply for client state
  * @property pageSize - Number of records to return, defaults to 50
  * @property pageToken - PageToken provided by the API
+ * @property startDate - The date and time after which the Log resources must have been created.
  */
 interface LogListInstancePageOptions {
+  endDate?: Date;
   functionSid?: string;
   pageNumber?: number;
   pageSize?: number;
   pageToken?: string;
+  startDate?: Date;
 }
 
 interface LogPayload extends LogResource, Page.TwilioResponsePayload {
@@ -160,6 +218,7 @@ interface LogPayload extends LogResource, Page.TwilioResponsePayload {
 
 interface LogResource {
   account_sid: string;
+  build_sid: string;
   date_created: Date;
   deployment_sid: string;
   environment_sid: string;
@@ -224,6 +283,7 @@ declare class LogInstance extends SerializableClass {
 
   private _proxy: LogContext;
   accountSid: string;
+  buildSid: string;
   dateCreated: Date;
   deploymentSid: string;
   environmentSid: string;
@@ -273,4 +333,4 @@ declare class LogPage extends Page<V1, LogPayload, LogResource, LogInstance> {
   toJSON(): any;
 }
 
-export { LogContext, LogInstance, LogList, LogListInstance, LogListInstanceEachOptions, LogListInstanceOptions, LogListInstancePageOptions, LogPage, LogPayload, LogResource, LogSolution }
+export { LogContext, LogInstance, LogLevel, LogList, LogListInstance, LogListInstanceEachOptions, LogListInstanceOptions, LogListInstancePageOptions, LogPage, LogPayload, LogResource, LogSolution }

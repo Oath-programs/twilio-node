@@ -31,9 +31,13 @@ describe('CurrentCall', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
-      var promise = client.preview.trusted_comms.currentCalls().fetch();
+      var opts = {
+        xXcnamSensitivePhoneNumberFrom: 'x_xcnam_sensitive_phone_number_from',
+        xXcnamSensitivePhoneNumberTo: 'x_xcnam_sensitive_phone_number_to'
+      };
+      var promise = client.preview.trusted_comms.currentCalls().fetch(opts);
       promise.then(function() {
         throw new Error('failed');
       }, function(error) {
@@ -43,30 +47,35 @@ describe('CurrentCall', function() {
 
       var url = 'https://preview.twilio.com/TrustedComms/CurrentCall';
 
+      var headers = {
+        'X-Xcnam-Sensitive-Phone-Number-From': 'x_xcnam_sensitive_phone_number_from',
+        'X-Xcnam-Sensitive-Phone-Number-To': 'x_xcnam_sensitive_phone_number_to'
+      };
       holodeck.assertHasRequest(new Request({
         method: 'GET',
-        url: url
+        url: url,
+        headers: headers
       }));
     }
   );
   it('should generate valid read_found response',
     function(done) {
-      var body = JSON.stringify({
-          'sid': 'CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'from': '+1500123',
-          'to': '+1500456',
-          'status': 'ringing',
-          'reason': 'Hello Jhon, your bank appointment has been confirmed.',
-          'created_at': '2019-05-01T20:00:00Z',
-          'caller': 'Owl Bank',
-          'logo': 'https://www.twilio.com/marketing/bundles/company/img/logos/red/twilio-logo-red.png',
+      var body = {
           'bg_color': '#fff',
+          'caller': 'Owl Bank',
+          'created_at': '2019-05-01T20:00:00Z',
           'font_color': '#f22f46',
-          'use_case': 'conversational',
+          'from': '+1500123',
+          'logo': 'https://www.twilio.com/marketing/bundles/company/img/logos/red/twilio-logo-red.png',
           'manager': 'Twilio',
+          'reason': 'Hello Jhon, your bank appointment has been confirmed.',
           'shield_img': 'https://www.twilio.com/marketing/bundles/company/img/badges/red/twilio-badge-red.png',
-          'url': 'https://preview.twilio.com/TrustedComms/CurrentCall'
-      });
+          'sid': 'CQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'status': 'ringing',
+          'to': '+1500456',
+          'url': 'https://preview.twilio.com/TrustedComms/CurrentCall',
+          'use_case': 'conversational'
+      };
 
       holodeck.mock(new Response(200, body));
 

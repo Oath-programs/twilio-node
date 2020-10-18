@@ -8,7 +8,6 @@
 import Marketplace = require('../Marketplace');
 import Page = require('../../../base/Page');
 import Response = require('../../../http/response');
-import serialize = require('../../../base/serialize');
 import { InstalledAddOnExtensionList } from './installedAddOn/installedAddOnExtension';
 import { InstalledAddOnExtensionListInstance } from './installedAddOn/installedAddOnExtension';
 import { SerializableClass } from '../../../interfaces';
@@ -28,7 +27,7 @@ declare function InstalledAddOnList(version: Marketplace): InstalledAddOnListIns
  * Options to pass to update
  *
  * @property configuration - The JSON object representing the configuration
- * @property uniqueName - The string that uniquely identifies this Add-on installation
+ * @property uniqueName - An application-defined string that uniquely identifies the resource
  */
 interface InstalledAddOnInstanceUpdateOptions {
   configuration?: object;
@@ -59,6 +58,21 @@ interface InstalledAddOnListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: InstalledAddOnInstance, done: (err?: Error) => void) => void): void;
+  /**
+   * Streams InstalledAddOnInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Function to process each record
    */
@@ -66,9 +80,20 @@ interface InstalledAddOnListInstance {
   /**
    * Constructs a installed_add_on
    *
-   * @param sid - The unique Installed Add-on Sid
+   * @param sid - The SID of the InstalledAddOn resource to fetch
    */
   get(sid: string): InstalledAddOnContext;
+  /**
+   * Retrieve a single target page of InstalledAddOnInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: InstalledAddOnPage) => any): Promise<InstalledAddOnPage>;
   /**
    * Retrieve a single target page of InstalledAddOnInstance records from the API.
    *
@@ -87,10 +112,30 @@ interface InstalledAddOnListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: InstalledAddOnInstance[]) => any): Promise<InstalledAddOnInstance[]>;
+  /**
+   * Lists InstalledAddOnInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: InstalledAddOnListInstanceOptions, callback?: (error: Error | null, items: InstalledAddOnInstance[]) => any): Promise<InstalledAddOnInstance[]>;
+  /**
+   * Retrieve a single page of InstalledAddOnInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: InstalledAddOnPage) => any): Promise<InstalledAddOnPage>;
   /**
    * Retrieve a single page of InstalledAddOnInstance records from the API.
    *
@@ -112,10 +157,10 @@ interface InstalledAddOnListInstance {
 /**
  * Options to pass to create
  *
- * @property acceptTermsOfService - A boolean reflecting your acceptance of the Terms of Service
- * @property availableAddOnSid - A string that uniquely identifies the Add-on to install
+ * @property acceptTermsOfService - Whether the Terms of Service were accepted
+ * @property availableAddOnSid - The SID of the AvaliableAddOn to install
  * @property configuration - The JSON object representing the configuration
- * @property uniqueName - The string that uniquely identifies this Add-on installation
+ * @property uniqueName - An application-defined string that uniquely identifies the resource
  */
 interface InstalledAddOnListInstanceCreateOptions {
   acceptTermsOfService: boolean;
@@ -210,7 +255,7 @@ declare class InstalledAddOnContext {
    * access, please contact help@twilio.com.
    *
    * @param version - Version of the resource
-   * @param sid - The unique Installed Add-on Sid
+   * @param sid - The SID of the InstalledAddOn resource to fetch
    */
   constructor(version: Marketplace, sid: string);
 
@@ -234,6 +279,12 @@ declare class InstalledAddOnContext {
   /**
    * update a InstalledAddOnInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: InstalledAddOnInstance) => any): Promise<InstalledAddOnInstance>;
+  /**
+   * update a InstalledAddOnInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
@@ -251,13 +302,13 @@ declare class InstalledAddOnInstance extends SerializableClass {
    *
    * @param version - Version of the resource
    * @param payload - The instance payload
-   * @param sid - The unique Installed Add-on Sid
+   * @param sid - The SID of the InstalledAddOn resource to fetch
    */
   constructor(version: Marketplace, payload: InstalledAddOnPayload, sid: string);
 
   private _proxy: InstalledAddOnContext;
   accountSid: string;
-  configuration: object;
+  configuration: any;
   dateCreated: Date;
   dateUpdated: Date;
   description: string;
@@ -285,6 +336,12 @@ declare class InstalledAddOnInstance extends SerializableClass {
    */
   toJSON(): any;
   uniqueName: string;
+  /**
+   * update a InstalledAddOnInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: InstalledAddOnInstance) => any): Promise<InstalledAddOnInstance>;
   /**
    * update a InstalledAddOnInstance
    *

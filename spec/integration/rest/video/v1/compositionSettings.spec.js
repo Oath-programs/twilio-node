@@ -31,7 +31,7 @@ describe('CompositionSettings', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.video.v1.compositionSettings().fetch();
       promise.then(function() {
@@ -51,16 +51,16 @@ describe('CompositionSettings', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'friendly_name': 'string',
           'aws_credentials_sid': 'CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'encryption_key_sid': 'CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'aws_s3_url': 'https://my-super-duper-bucket.s3.amazonaws.com/my/path/',
+          'aws_s3_url': 'https://www.twilio.com',
           'aws_storage_enabled': true,
           'encryption_enabled': true,
           'url': 'https://video.twilio.com/v1/CompositionSettings/Default'
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -75,7 +75,7 @@ describe('CompositionSettings', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var opts = {friendlyName: 'friendly_name'};
       var promise = client.video.v1.compositionSettings().create(opts);
@@ -98,16 +98,16 @@ describe('CompositionSettings', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'friendly_name': 'friendly_name',
           'aws_credentials_sid': 'CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'encryption_key_sid': 'CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-          'aws_s3_url': 'https://my-super-duper-bucket.s3.amazonaws.com/my/path/',
+          'aws_s3_url': 'https://www.twilio.com',
           'aws_storage_enabled': true,
           'encryption_enabled': true,
           'url': 'https://video.twilio.com/v1/CompositionSettings/Default'
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 

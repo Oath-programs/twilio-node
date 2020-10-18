@@ -31,7 +31,7 @@ describe('Configuration', function() {
   });
   it('should generate valid fetch request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.flexApi.v1.configuration().fetch();
       promise.then(function() {
@@ -51,7 +51,7 @@ describe('Configuration', function() {
   );
   it('should generate valid fetch response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2016-08-01T22:10:40Z',
           'date_updated': '2016-08-01T22:10:40Z',
@@ -119,8 +119,10 @@ describe('Configuration', function() {
           'runtime_domain': 'https://flex.twilio.com',
           'messaging_service_instance_sid': 'MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'chat_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'flex_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'ui_language': 'en',
           'ui_attributes': {},
+          'ui_dependencies': {},
           'ui_version': '1.0',
           'service_version': '1.0',
           'call_recording_enabled': true,
@@ -164,12 +166,46 @@ describe('Configuration', function() {
                   'workflow_sid': 'WWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           },
+          'queue_stats_configuration': {
+              'default': {
+                  'service_level_threshold': 20,
+                  'short_abandoned_threshold': 5,
+                  'reset_timezone': 'America/New_York',
+                  'reset_time': '00:00'
+              },
+              'queue_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'reset_timezone': 'Europe/Tallinn',
+                      'reset_time': '01:00'
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'reset_timezone': 'Europe/Paris',
+                      'reset_time': '02:00'
+                  }
+              ],
+              'queue_channel_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'service_level_threshold': 10,
+                      'short_abandoned_threshold': 10
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'service_level_threshold': 30,
+                      'short_abandoned_threshold': 15
+                  }
+              ]
+          },
           'serverless_service_sids': [
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab'
           ],
           'url': 'https://flex-api.twilio.com/v1/Configuration'
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 
@@ -184,7 +220,7 @@ describe('Configuration', function() {
   );
   it('should generate valid create request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.flexApi.v1.configuration().create();
       promise.then(function() {
@@ -204,7 +240,7 @@ describe('Configuration', function() {
   );
   it('should generate valid create response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2016-08-01T22:10:40Z',
           'date_updated': '2016-08-01T22:10:40Z',
@@ -272,8 +308,10 @@ describe('Configuration', function() {
           'runtime_domain': 'https://flex.twilio.com',
           'messaging_service_instance_sid': 'MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'chat_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'flex_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'ui_language': 'en',
           'ui_attributes': {},
+          'ui_dependencies': {},
           'ui_version': '1.0',
           'service_version': '1.0',
           'call_recording_enabled': true,
@@ -317,12 +355,46 @@ describe('Configuration', function() {
                   'workflow_sid': 'WWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           },
+          'queue_stats_configuration': {
+              'default': {
+                  'service_level_threshold': 20,
+                  'short_abandoned_threshold': 5,
+                  'reset_timezone': 'America/New_York',
+                  'reset_time': '00:00'
+              },
+              'queue_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'reset_timezone': 'Europe/Tallinn',
+                      'reset_time': '01:00'
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'reset_timezone': 'Europe/Paris',
+                      'reset_time': '02:00'
+                  }
+              ],
+              'queue_channel_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'service_level_threshold': 10,
+                      'short_abandoned_threshold': 10
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'service_level_threshold': 30,
+                      'short_abandoned_threshold': 15
+                  }
+              ]
+          },
           'serverless_service_sids': [
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab'
           ],
           'url': 'https://flex-api.twilio.com/v1/Configuration'
-      });
+      };
 
       holodeck.mock(new Response(201, body));
 
@@ -337,7 +409,7 @@ describe('Configuration', function() {
   );
   it('should generate valid update request',
     function(done) {
-      holodeck.mock(new Response(500, '{}'));
+      holodeck.mock(new Response(500, {}));
 
       var promise = client.flexApi.v1.configuration().update();
       promise.then(function() {
@@ -357,7 +429,7 @@ describe('Configuration', function() {
   );
   it('should generate valid update response',
     function(done) {
-      var body = JSON.stringify({
+      var body = {
           'account_sid': 'ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'date_created': '2016-08-01T22:10:40Z',
           'date_updated': '2016-08-01T22:10:40Z',
@@ -425,8 +497,10 @@ describe('Configuration', function() {
           'runtime_domain': 'https://flex.twilio.com',
           'messaging_service_instance_sid': 'MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'chat_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          'flex_service_instance_sid': 'ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'ui_language': 'en',
           'ui_attributes': {},
+          'ui_dependencies': {},
           'ui_version': '1.0',
           'service_version': '1.0',
           'call_recording_enabled': true,
@@ -470,12 +544,46 @@ describe('Configuration', function() {
                   'workflow_sid': 'WWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
               }
           },
+          'queue_stats_configuration': {
+              'default': {
+                  'service_level_threshold': 20,
+                  'short_abandoned_threshold': 5,
+                  'reset_timezone': 'America/New_York',
+                  'reset_time': '00:00'
+              },
+              'queue_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'reset_timezone': 'Europe/Tallinn',
+                      'reset_time': '01:00'
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'reset_timezone': 'Europe/Paris',
+                      'reset_time': '02:00'
+                  }
+              ],
+              'queue_channel_configurations': [
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                      'service_level_threshold': 10,
+                      'short_abandoned_threshold': 10
+                  },
+                  {
+                      'queue_sid': 'WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'channel_sid': 'TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab',
+                      'service_level_threshold': 30,
+                      'short_abandoned_threshold': 15
+                  }
+              ]
+          },
           'serverless_service_sids': [
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               'ZSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab'
           ],
           'url': 'https://flex-api.twilio.com/v1/Configuration'
-      });
+      };
 
       holodeck.mock(new Response(200, body));
 

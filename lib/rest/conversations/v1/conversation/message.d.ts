@@ -8,7 +8,8 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V1 = require('../../V1');
-import serialize = require('../../../../base/serialize');
+import { DeliveryReceiptList } from './message/deliveryReceipt';
+import { DeliveryReceiptListInstance } from './message/deliveryReceipt';
 import { SerializableClass } from '../../../../interfaces';
 
 type MessageWebhookEnabledType = 'true'|'false';
@@ -16,13 +17,19 @@ type MessageWebhookEnabledType = 'true'|'false';
 /**
  * Initialize the MessageList
  *
- * PLEASE NOTE that this class contains beta products that are subject to change.
- * Use them with caution.
- *
  * @param version - Version of the resource
- * @param conversationSid - The unique id of the Conversation for this message.
+ * @param conversationSid - The unique ID of the Conversation for this message.
  */
 declare function MessageList(version: V1, conversationSid: string): MessageListInstance;
+
+/**
+ * Options to pass to remove
+ *
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
+ */
+interface MessageInstanceRemoveOptions {
+  xTwilioWebhookEnabled?: MessageWebhookEnabledType;
+}
 
 /**
  * Options to pass to update
@@ -32,6 +39,7 @@ declare function MessageList(version: V1, conversationSid: string): MessageListI
  * @property body - The content of the message.
  * @property dateCreated - The date that this resource was created.
  * @property dateUpdated - The date that this resource was last updated.
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface MessageInstanceUpdateOptions {
   attributes?: string;
@@ -39,6 +47,7 @@ interface MessageInstanceUpdateOptions {
   body?: string;
   dateCreated?: Date;
   dateUpdated?: Date;
+  xTwilioWebhookEnabled?: MessageWebhookEnabledType;
 }
 
 interface MessageListInstance {
@@ -49,10 +58,31 @@ interface MessageListInstance {
   /**
    * create a MessageInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: MessageInstance) => any): Promise<MessageInstance>;
+  /**
+   * create a MessageInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
   create(opts?: MessageListInstanceCreateOptions, callback?: (error: Error | null, item: MessageInstance) => any): Promise<MessageInstance>;
+  /**
+   * Streams MessageInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: MessageInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams MessageInstance records from the API.
    *
@@ -83,6 +113,17 @@ interface MessageListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: MessagePage) => any): Promise<MessagePage>;
+  /**
+   * Retrieve a single target page of MessageInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -93,10 +134,30 @@ interface MessageListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: MessageInstance[]) => any): Promise<MessageInstance[]>;
+  /**
+   * Lists MessageInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: MessageListInstanceOptions, callback?: (error: Error | null, items: MessageInstance[]) => any): Promise<MessageInstance[]>;
+  /**
+   * Retrieve a single page of MessageInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: MessagePage) => any): Promise<MessagePage>;
   /**
    * Retrieve a single page of MessageInstance records from the API.
    *
@@ -123,7 +184,8 @@ interface MessageListInstance {
  * @property body - The content of the message.
  * @property dateCreated - The date that this resource was created.
  * @property dateUpdated - The date that this resource was last updated.
- * @property mediaSid - The Media Sid to be attached to the new Message.
+ * @property mediaSid - The Media SID to be attached to the new Message.
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface MessageListInstanceCreateOptions {
   attributes?: string;
@@ -132,6 +194,7 @@ interface MessageListInstanceCreateOptions {
   dateCreated?: Date;
   dateUpdated?: Date;
   mediaSid?: string;
+  xTwilioWebhookEnabled?: MessageWebhookEnabledType;
 }
 
 /**
@@ -202,8 +265,11 @@ interface MessageResource {
   conversation_sid: string;
   date_created: Date;
   date_updated: Date;
+  delivery: object;
   index: number;
+  links: string;
   media: object[];
+  participant_sid: string;
   sid: string;
   url: string;
 }
@@ -217,15 +283,13 @@ declare class MessageContext {
   /**
    * Initialize the MessageContext
    *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
-   *
    * @param version - Version of the resource
-   * @param conversationSid - The unique id of the Conversation for this message.
+   * @param conversationSid - The unique ID of the Conversation for this message.
    * @param sid - A 34 character string that uniquely identifies this resource.
    */
   constructor(version: V1, conversationSid: string, sid: string);
 
+  deliveryReceipts: DeliveryReceiptListInstance;
   /**
    * fetch a MessageInstance
    *
@@ -239,9 +303,22 @@ declare class MessageContext {
    */
   remove(callback?: (error: Error | null, items: MessageInstance) => any): Promise<boolean>;
   /**
+   * remove a MessageInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: MessageInstanceRemoveOptions, callback?: (error: Error | null, items: MessageInstance) => any): Promise<boolean>;
+  /**
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a MessageInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: MessageInstance) => any): Promise<MessageInstance>;
   /**
    * update a MessageInstance
    *
@@ -256,12 +333,9 @@ declare class MessageInstance extends SerializableClass {
   /**
    * Initialize the MessageContext
    *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
-   *
    * @param version - Version of the resource
    * @param payload - The instance payload
-   * @param conversationSid - The unique id of the Conversation for this message.
+   * @param conversationSid - The unique ID of the Conversation for this message.
    * @param sid - A 34 character string that uniquely identifies this resource.
    */
   constructor(version: V1, payload: MessagePayload, conversationSid: string, sid: string);
@@ -274,6 +348,11 @@ declare class MessageInstance extends SerializableClass {
   conversationSid: string;
   dateCreated: Date;
   dateUpdated: Date;
+  delivery: any;
+  /**
+   * Access the deliveryReceipts
+   */
+  deliveryReceipts(): DeliveryReceiptListInstance;
   /**
    * fetch a MessageInstance
    *
@@ -281,18 +360,33 @@ declare class MessageInstance extends SerializableClass {
    */
   fetch(callback?: (error: Error | null, items: MessageInstance) => any): Promise<MessageInstance>;
   index: number;
+  links: string;
   media: object[];
+  participantSid: string;
   /**
    * remove a MessageInstance
    *
    * @param callback - Callback to handle processed record
    */
   remove(callback?: (error: Error | null, items: MessageInstance) => any): Promise<boolean>;
+  /**
+   * remove a MessageInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: MessageInstanceRemoveOptions, callback?: (error: Error | null, items: MessageInstance) => any): Promise<boolean>;
   sid: string;
   /**
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a MessageInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: MessageInstance) => any): Promise<MessageInstance>;
   /**
    * update a MessageInstance
    *
@@ -307,9 +401,6 @@ declare class MessageInstance extends SerializableClass {
 declare class MessagePage extends Page<V1, MessagePayload, MessageResource, MessageInstance> {
   /**
    * Initialize the MessagePage
-   *
-   * PLEASE NOTE that this class contains beta products that are subject to change.
-   * Use them with caution.
    *
    * @param version - Version of the resource
    * @param response - Response from the API
@@ -329,4 +420,4 @@ declare class MessagePage extends Page<V1, MessagePayload, MessageResource, Mess
   toJSON(): any;
 }
 
-export { MessageContext, MessageInstance, MessageInstanceUpdateOptions, MessageList, MessageListInstance, MessageListInstanceCreateOptions, MessageListInstanceEachOptions, MessageListInstanceOptions, MessageListInstancePageOptions, MessagePage, MessagePayload, MessageResource, MessageSolution }
+export { MessageContext, MessageInstance, MessageInstanceRemoveOptions, MessageInstanceUpdateOptions, MessageList, MessageListInstance, MessageListInstanceCreateOptions, MessageListInstanceEachOptions, MessageListInstanceOptions, MessageListInstancePageOptions, MessagePage, MessagePayload, MessageResource, MessageSolution, MessageWebhookEnabledType }

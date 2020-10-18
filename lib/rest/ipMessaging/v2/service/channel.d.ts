@@ -8,7 +8,6 @@
 import Page = require('../../../../base/Page');
 import Response = require('../../../../http/response');
 import V2 = require('../../V2');
-import serialize = require('../../../../base/serialize');
 import { InviteList } from './channel/invite';
 import { InviteListInstance } from './channel/invite';
 import { MemberList } from './channel/member';
@@ -32,6 +31,15 @@ type ChannelWebhookEnabledType = 'true'|'false';
 declare function ChannelList(version: V2, serviceSid: string): ChannelListInstance;
 
 /**
+ * Options to pass to remove
+ *
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
+ */
+interface ChannelInstanceRemoveOptions {
+  xTwilioWebhookEnabled?: ChannelWebhookEnabledType;
+}
+
+/**
  * Options to pass to update
  *
  * @property attributes - A valid JSON string that contains application-specific data
@@ -40,6 +48,7 @@ declare function ChannelList(version: V2, serviceSid: string): ChannelListInstan
  * @property dateUpdated - The ISO 8601 date and time in GMT when the resource was updated
  * @property friendlyName - A string to describe the resource
  * @property uniqueName - An application-defined string that uniquely identifies the resource
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface ChannelInstanceUpdateOptions {
   attributes?: string;
@@ -48,6 +57,7 @@ interface ChannelInstanceUpdateOptions {
   dateUpdated?: Date;
   friendlyName?: string;
   uniqueName?: string;
+  xTwilioWebhookEnabled?: ChannelWebhookEnabledType;
 }
 
 interface ChannelListInstance {
@@ -58,10 +68,31 @@ interface ChannelListInstance {
   /**
    * create a ChannelInstance
    *
+   * @param callback - Callback to handle processed record
+   */
+  create(callback?: (error: Error | null, item: ChannelInstance) => any): Promise<ChannelInstance>;
+  /**
+   * create a ChannelInstance
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle processed record
    */
   create(opts?: ChannelListInstanceCreateOptions, callback?: (error: Error | null, item: ChannelInstance) => any): Promise<ChannelInstance>;
+  /**
+   * Streams ChannelInstance records from the API.
+   *
+   * This operation lazily loads records as efficiently as possible until the limit
+   * is reached.
+   *
+   * The results are passed into the callback function, so this operation is memory
+   * efficient.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Function to process each record
+   */
+  each(callback?: (item: ChannelInstance, done: (err?: Error) => void) => void): void;
   /**
    * Streams ChannelInstance records from the API.
    *
@@ -92,6 +123,17 @@ interface ChannelListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  getPage(callback?: (error: Error | null, items: ChannelPage) => any): Promise<ChannelPage>;
+  /**
+   * Retrieve a single target page of ChannelInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param targetUrl - API-generated URL for the requested results page
    * @param callback - Callback to handle list of records
    */
@@ -102,10 +144,30 @@ interface ChannelListInstance {
    * If a function is passed as the first argument, it will be used as the callback
    * function.
    *
+   * @param callback - Callback to handle list of records
+   */
+  list(callback?: (error: Error | null, items: ChannelInstance[]) => any): Promise<ChannelInstance[]>;
+  /**
+   * Lists ChannelInstance records from the API as a list.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
    * @param opts - Options for request
    * @param callback - Callback to handle list of records
    */
   list(opts?: ChannelListInstanceOptions, callback?: (error: Error | null, items: ChannelInstance[]) => any): Promise<ChannelInstance[]>;
+  /**
+   * Retrieve a single page of ChannelInstance records from the API.
+   *
+   * The request is executed immediately.
+   *
+   * If a function is passed as the first argument, it will be used as the callback
+   * function.
+   *
+   * @param callback - Callback to handle list of records
+   */
+  page(callback?: (error: Error | null, items: ChannelPage) => any): Promise<ChannelPage>;
   /**
    * Retrieve a single page of ChannelInstance records from the API.
    *
@@ -134,6 +196,7 @@ interface ChannelListInstance {
  * @property friendlyName - A string to describe the new resource
  * @property type - The visibility of the channel
  * @property uniqueName - An application-defined string that uniquely identifies the Channel resource
+ * @property xTwilioWebhookEnabled - The X-Twilio-Webhook-Enabled HTTP request header
  */
 interface ChannelListInstanceCreateOptions {
   attributes?: string;
@@ -143,6 +206,7 @@ interface ChannelListInstanceCreateOptions {
   friendlyName?: string;
   type?: ChannelChannelType;
   uniqueName?: string;
+  xTwilioWebhookEnabled?: ChannelWebhookEnabledType;
 }
 
 /**
@@ -259,9 +323,22 @@ declare class ChannelContext {
    */
   remove(callback?: (error: Error | null, items: ChannelInstance) => any): Promise<boolean>;
   /**
+   * remove a ChannelInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: ChannelInstanceRemoveOptions, callback?: (error: Error | null, items: ChannelInstance) => any): Promise<boolean>;
+  /**
    * Provide a user-friendly representation
    */
   toJSON(): any;
+  /**
+   * update a ChannelInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ChannelInstance) => any): Promise<ChannelInstance>;
   /**
    * update a ChannelInstance
    *
@@ -318,6 +395,13 @@ declare class ChannelInstance extends SerializableClass {
    * @param callback - Callback to handle processed record
    */
   remove(callback?: (error: Error | null, items: ChannelInstance) => any): Promise<boolean>;
+  /**
+   * remove a ChannelInstance
+   *
+   * @param opts - Options for request
+   * @param callback - Callback to handle processed record
+   */
+  remove(opts?: ChannelInstanceRemoveOptions, callback?: (error: Error | null, items: ChannelInstance) => any): Promise<boolean>;
   serviceSid: string;
   sid: string;
   /**
@@ -326,6 +410,12 @@ declare class ChannelInstance extends SerializableClass {
   toJSON(): any;
   type: ChannelChannelType;
   uniqueName: string;
+  /**
+   * update a ChannelInstance
+   *
+   * @param callback - Callback to handle processed record
+   */
+  update(callback?: (error: Error | null, items: ChannelInstance) => any): Promise<ChannelInstance>;
   /**
    * update a ChannelInstance
    *
@@ -363,4 +453,4 @@ declare class ChannelPage extends Page<V2, ChannelPayload, ChannelResource, Chan
   toJSON(): any;
 }
 
-export { ChannelContext, ChannelInstance, ChannelInstanceUpdateOptions, ChannelList, ChannelListInstance, ChannelListInstanceCreateOptions, ChannelListInstanceEachOptions, ChannelListInstanceOptions, ChannelListInstancePageOptions, ChannelPage, ChannelPayload, ChannelResource, ChannelSolution }
+export { ChannelChannelType, ChannelContext, ChannelInstance, ChannelInstanceRemoveOptions, ChannelInstanceUpdateOptions, ChannelList, ChannelListInstance, ChannelListInstanceCreateOptions, ChannelListInstanceEachOptions, ChannelListInstanceOptions, ChannelListInstancePageOptions, ChannelPage, ChannelPayload, ChannelResource, ChannelSolution, ChannelWebhookEnabledType }
